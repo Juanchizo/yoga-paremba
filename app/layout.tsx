@@ -1,4 +1,6 @@
 import { Geist, Geist_Mono, Roboto_Slab, Noto_Serif } from "next/font/google"
+import Header from "@/app/Header/page"
+import Footer from "@/app/Footer/page"
 
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
@@ -30,7 +32,9 @@ export default function RootLayout({
       className={cn("antialiased", fontSans.variable, fontMono.variable, "font-serif", robotoSlab.variable, notoSerifHeading.variable)}
     >
       <body>
+        <Header />
         <ThemeProvider>{children}</ThemeProvider>
+        <Footer />
       </body>
     </html>
   )
