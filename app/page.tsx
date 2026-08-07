@@ -109,14 +109,14 @@ export default function HomePage() {
             Por eso, mi propuesta no es solamente que hagas yoga. Es ofrecerte herramientas que te ayuden a conocer mejor tu cuerpo, acompañar sus cambios y encontrar momentos de conexión durante el embarazo.
           </p>
         </div>
-        <div className="flex items-center justify-center w-full">
-          <Carousel className="w-full max-w-2xl flex bg-[#8FAE9C]/20 dark:bg-[#C47E63]/3 rounded-xl shadow" 
+        <div className="flex items-center justify-center w-full p-8">
+          <Carousel className="w-full max-w-2xl flex bg-[#8FAE9C]/20 dark:bg-[#C47E63]/3 rounded-xl shadow " 
           plugins={[plugin.current]} 
           onMouseEnter={plugin.current.stop}
           onMouseLeave={plugin.current.reset}>
             <CarouselContent className="">
               {itemscard.map((item, index) => (
-                <CarouselItem key={index} className="md:basis-1/2">
+                <CarouselItem key={index} className="md:basis-1/2 ">
                   <div className="p-2">
                   <Card className="">
                     <CardHeader className="">

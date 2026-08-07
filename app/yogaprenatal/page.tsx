@@ -1,9 +1,34 @@
 "use client";
+import { Card, CardHeader, CardDescription } from '@/components/ui/card';
+import { Carousel, CarouselItem, CarouselContent, CarouselNext, CarouselPrevious } from '@/components/ui/carousel';
 import Image from 'next/image';
 import Link from 'next/link';
 
 
 export default function GuiaYogaPrenatalPage() {
+  const prenatalYogaItems = [
+    {
+      title: '🧘‍♀️ Posturas adaptadas',
+      description:
+        'Las posturas se modifican para acompañar el crecimiento del abdomen. Pueden utilizarse elementos como bloques, mantas, bolsters, pelotas de pilates o sillas para encontrar mayor estabilidad.',
+    },
+    {
+      title: '🌿 Atención al cuerpo',
+      description:
+        'Pone especial atención en zonas como la espalda, la pelvis y las caderas, acompañando los cambios posturales y las molestias habituales del embarazo.',
+    },
+    {
+      title: '🌬️ Respiración y relajación',
+      description:
+        'Uno de los pilares de la práctica. Te ayuda a conectar con tu cuerpo, encontrar momentos de calma y adquirir herramientas para el nacimiento.',
+    },
+    {
+      title: '🤍 Conexión',
+      description:
+        'Un espacio para bajar el ritmo, escuchar tu cuerpo y conectar con vos misma y con tu bebé.',
+    },
+  ];
+
   return (
     <article className="max-w-[100rem] mx-auto px-6 py-12 text-gray-800 space-y-12">
       
@@ -69,35 +94,27 @@ export default function GuiaYogaPrenatalPage() {
             No se trata de hacer las mismas posturas que practicarías fuera del embarazo. A medida que tu cuerpo cambia, también puede cambiar tu forma de moverte y tu práctica puede necesitar adaptaciones.
           </p>
         </div>
-
-        <div className="flex flex-col gap-4">
-          <div className="p-4 border rounded-xl bg-white space-y-1">
-            <h3 className="font-medium text-gray-800">🧘‍♀️ Posturas adaptadas</h3>
-            <p className="text-sm text-gray-600 font-light">
-              Las posturas se modifican para acompañar el crecimiento del abdomen. Pueden utilizarse elementos como bloques, mantas, bolsters, pelotas de pilates o sillas para encontrar mayor estabilidad.
-            </p>
-          </div>
-
-          <div className="p-4 border rounded-xl bg-white space-y-1">
-            <h3 className="font-medium text-gray-800">🌿 Atención al cuerpo</h3>
-            <p className="text-sm text-gray-600 font-light">
-              Pone especial atención en zonas como la espalda, la pelvis y las caderas, acompañando los cambios posturales y las molestias habituales del embarazo.
-            </p>
-          </div>
-
-          <div className="p-4 border rounded-xl bg-white space-y-1">
-            <h3 className="font-medium text-gray-800">🌬️ Respiración y relajación</h3>
-            <p className="text-sm text-gray-600 font-light">
-              Uno de los pilares de la práctica. Te ayuda a conectar con tu cuerpo, encontrar momentos de calma y adquirir herramientas para el nacimiento.
-            </p>
-          </div>
-
-          <div className="p-4 border rounded-xl bg-white space-y-1">
-            <h3 className="font-medium text-gray-800">🤍 Conexión</h3>
-            <p className="text-sm text-gray-600 font-light">
-              Un espacio para bajar el ritmo, escuchar tu cuerpo y conectar con vos misma y con tu bebé.
-            </p>
-          </div>
+        <div className='flex justify-content items-center w-full'>
+          <Carousel>
+            <CarouselContent className='max-w-xl min-h-sm basis-1/2'>
+            {prenatalYogaItems.map((item, index) => (
+              <CarouselItem key={index}>
+                <div className='p2'>
+                <Card>
+                  <CardHeader>
+                    {item.title}
+                  </CardHeader>
+                  <CardDescription>
+                    {item.description}
+                  </CardDescription>
+                </Card>
+                </div>
+              </CarouselItem>
+            ))}
+            </CarouselContent>
+            <CarouselPrevious />
+            <CarouselNext />
+          </Carousel>
         </div>
 
         <div className="space-y-3 pt-2 text-gray-700 font-light">
