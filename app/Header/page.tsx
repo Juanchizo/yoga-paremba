@@ -87,7 +87,7 @@ function Header() {
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
                 <DropdownMenuGroup>
-                    <DropdownMenuItem>Pre-Registro</DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => router.push('/pre-registro')}>Pre-Registro</DropdownMenuItem>
                 </DropdownMenuGroup>
                 </DropdownMenuContent>
             </DropdownMenu>
