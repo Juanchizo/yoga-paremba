@@ -1,5 +1,4 @@
 "use client"
-
 import { supabase } from "@/lib/client"
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -77,6 +76,10 @@ function Preregistro() {
                   required
                 />
                 <FieldDescription>Coloca tu Contraseña</FieldDescription>
+              </Field>
+              <Field>
+                <FieldLabel>¿En qué semana de embarazo estás?</FieldLabel>
+                
               </Field>
             </FieldGroup>
           </CardContent>
