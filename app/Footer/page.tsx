@@ -2,6 +2,7 @@
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import instagramSvg from '@/public/instagram.svg';
 import faceSvg from '@/public/face.svg';
 import whatsSvg from '@/public/whats.svg';
@@ -27,6 +28,12 @@ const socials = [
 
 
 export default function Footer() {
+      const pathname = usePathname();
+  
+      if (pathname === '/pre-registro2') {
+          return null;
+      }
+      
   const openSocial = (url: string) => {
     window.open(url, '_blank', 'noopener,noreferrer');
   };

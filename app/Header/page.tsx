@@ -17,10 +17,16 @@ import Tatifoto from "@/public/tatifoto.png"
 import { useRouter } from 'next/navigation';
 import { buttonVariants } from "@/components/ui/button"
 import menu from "@/public/menu.svg"
+import { usePathname } from 'next/navigation';
 
 
 function Header() {
   const router = useRouter();
+    const pathname = usePathname();
+
+    if (pathname === '/pre-registro2') {
+        return null;
+    }
 
   return (
     <header className="sticky top-0 z-50 shadow-md shadow-black-100/10 dark:shadow-white/6 bg-background transition-all h-16 flex items-center">

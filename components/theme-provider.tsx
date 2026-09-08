@@ -1,23 +1,60 @@
 "use client"
 
 import * as React from "react"
-import { ThemeProvider as NextThemesProvider, useTheme } from "next-themes"
 
-function ThemeProvider({
-  children,
-  ...props
-}: React.ComponentProps<typeof NextThemesProvider>) {
+type Theme = "light" | "dark"
+
+type ThemeContextValue = {
+  theme: Theme
+  resolvedTheme: Theme
+  setTheme: (theme: Theme) => void
+}
+
+const THEME_STORAGE_KEY = "theme"
+const ThemeContext = React.createContext<ThemeContextValue | null>(null)
+
+function getPreferredTheme(): Theme {
+  if (typeof window === "undefined") {
+    return "light"
+  }
+
+  const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
+  if (stored === "light" || stored === "dark") {
+    return stored
+  }
+
+  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
+}
+
+function ThemeProvider({ children }: { children: React.ReactNode }) {
+  const [theme, setThemeState] = React.useState<Theme>("light")
+
+  React.useEffect(() => {
+    const initialTheme = getPreferredTheme()
+    setThemeState(initialTheme)
+    document.documentElement.classList.toggle("dark", initialTheme === "dark")
+  }, [])
+
+  const setTheme = React.useCallback((nextTheme: Theme) => {
+    setThemeState(nextTheme)
+    document.documentElement.classList.toggle("dark", nextTheme === "dark")
+    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
+  }, [])
+
+  const value = React.useMemo<ThemeContextValue>(
+    () => ({
+      theme,
+      resolvedTheme: theme,
+      setTheme,
+    }),
+    [setTheme, theme]
+  )
+
   return (
-    <NextThemesProvider
-      attribute="class"
-      defaultTheme="system"
-      enableSystem
-      disableTransitionOnChange
-      {...props}
-    >
+    <ThemeContext.Provider value={value}>
       <ThemeHotkey />
       {children}
-    </NextThemesProvider>
+    </ThemeContext.Provider>
   )
 }
 
@@ -32,6 +69,16 @@ function isTypingTarget(target: EventTarget | null) {
     target.tagName === "TEXTAREA" ||
     target.tagName === "SELECT"
   )
+}
+
+function useTheme() {
+  const context = React.useContext(ThemeContext)
+
+  if (!context) {
+    throw new Error("useTheme must be used within a ThemeProvider")
+  }
+
+  return context
 }
 
 function ThemeHotkey() {
@@ -68,4 +115,4 @@ function ThemeHotkey() {
   return null
 }
 
-export { ThemeProvider }
+export { ThemeProvider, useTheme }
