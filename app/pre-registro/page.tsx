@@ -3,11 +3,7 @@
 import { useEffect, useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-<<<<<<< Updated upstream
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
-=======
-import { FieldGroup, Field, FieldLabel, FieldDescription, FieldSeparator } from "@/components/ui/field"
->>>>>>> Stashed changes
 import {
   Card,
   CardContent,
@@ -18,16 +14,11 @@ import {
 } from "@/components/ui/card"
 import { useRouter } from "next/navigation"
 
-<<<<<<< Updated upstream
 export default function Preregistro() {
   const router = useRouter()
   const [nombre, setNombre] = useState("")
   const [pais, setPais] = useState("")
   const [fechaNacimiento, setFechaNacimiento] = useState("")
-=======
-
-function Preregistro() {
->>>>>>> Stashed changes
   const [email, setEmail] = useState("")
   const [whatsapp, setWhatsapp] = useState("")
   const [semanasEmbarazo, setSemanasEmbarazo] = useState("")
@@ -119,7 +110,6 @@ function Preregistro() {
   const canSubmit = isBaseValid && isCheckValid && isEmailValid && isWhatsappValid && !loading;
 
   return (
-<<<<<<< Updated upstream
     <div className="min-h-screen flex items-center justify-center py-10 px-4 bg-stone-50">
         <Card className="w-full max-w-lg shadow-md border-[#C47E63]/20">
           <form onSubmit={registrar}>
@@ -238,56 +228,6 @@ function Preregistro() {
               </Button>
             </CardFooter>
           </form>
-=======
-    <div className="min-h-screen flex items-center justify-center justify-between">
-        <Card className="w-full max-w-sm">
-          <CardHeader>
-            <CardTitle>Pre-Registro</CardTitle>
-            <CardDescription>Registrate rellenando el formulario</CardDescription>
-            <CardAction>
-              <Button variant="link">Log In</Button>
-            </CardAction>
-          </CardHeader>
-          <CardContent>
-            <FieldGroup>
-              <Field>
-                <FieldLabel htmlFor="inputgmail">Email</FieldLabel>
-                <Input
-                  id="inputgmail"
-                  placeholder="yoga123@gmail.com"
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                />
-                <FieldDescription>Coloca tu Email</FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="inputpass">Contraseña</FieldLabel>
-                <Input
-                  id="inputpass"
-                  type="password"
-                  placeholder="ejemplo: Yoga_123*"
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                />
-                <FieldDescription>Coloca tu Contraseña</FieldDescription>
-              </Field>
-              <Field>
-                <FieldLabel>¿En qué semana de embarazo estás?</FieldLabel>
-                <Input placeholder="example"></Input>
-              </Field>
-              <Field>
-                <FieldLabel>¿Por donde quieres recibir nuestras notificaciones?</FieldLabel>
-                
-                <Button>WhatsApp</Button>
-              </Field>
-            </FieldGroup>
-          </CardContent>
-          <CardFooter>
-            <Button className="w-full !bg-[#C47E63]" onClick={registrar}>
-              Registrarse
-            </Button>
-          </CardFooter>
->>>>>>> Stashed changes
         </Card>
 
         {/* Modal de Agradecimiento */}
