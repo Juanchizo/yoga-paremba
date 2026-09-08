@@ -110,7 +110,7 @@ export default function Preregistro() {
   const canSubmit = isBaseValid && isCheckValid && isEmailValid && isWhatsappValid && !loading;
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 px-4 bg-stone-50">
+    <div className="min-h-screen flex items-center justify-center py-10 px-4">
         <Card className="w-full max-w-lg shadow-md border-[#C47E63]/20">
           <form onSubmit={registrar}>
             <CardHeader className="text-center">
