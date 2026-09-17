@@ -45,6 +45,9 @@ export default function Footer() {
           <p className="text-sm uppercase tracking-[0.2em] text-background">
             Tati Montero <strong className="font-semibold">Yoga</strong>
           </p>
+          <Link href="/terminos" className="text-sm text-background hover:underline block">
+            Términos y Condiciones
+          </Link>
         </div>
 
         <div className="flex flex-col items-start gap-4 sm:flex-row sm:items-center">
