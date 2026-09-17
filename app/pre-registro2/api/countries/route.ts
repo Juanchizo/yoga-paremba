@@ -1,11 +1,13 @@
 import { NextResponse } from "next/server"
 
+const API_KEY = process.env.API_KEY
+
 export async function GET() {
   try {
     // Aquí process.env.API_KEY SÍ se lee correctamente
     const response = await fetch("https://api.restcountries.com/countries/v5", {
       headers: {
-        Authorization: `Bearer ${process.env.API_KEY}`,
+        Authorization: `Bearer ${API_KEY}`,
       },
     })
 

@@ -115,7 +115,9 @@ export default function Preregistro() {
           <form onSubmit={registrar}>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-light text-[#C47E63]">Pre-Registro</CardTitle>
-              <CardDescription>Déjanos tus datos para avisarte cuando abra la membresía</CardDescription>
+              <CardDescription className="mb-3">
+                Déjanos tus datos para avisarte cuando abra la membresía
+              </CardDescription>
             </CardHeader>
             <CardContent>
               <FieldGroup className="space-y-4">
