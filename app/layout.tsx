@@ -5,10 +5,16 @@ import Footer from "@/app/Footer/page"
 import "./globals.css"
 import { ThemeProvider } from "@/components/theme-provider"
 import { cn } from "@/lib/utils";
+import { Metadata } from "next"
 
 const notoSerifHeading = Noto_Serif({subsets:['latin'],variable:'--font-heading'});
 
 const robotoSlab = Roboto_Slab({subsets:['latin'],variable:'--font-serif'});
+
+export const metadata: Metadata = {
+  title: 'Tati Yoga',
+  description: 'Yoga prenatal para acompañarte durante tu embarazo. Un espacio para moverte, respirar y conectar con tu cuerpo durante una de las etapas más transformadoras de tu vida.',
+};
 
 const fontSans = Geist({
   subsets: ["latin"],

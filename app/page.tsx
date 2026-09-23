@@ -1,4 +1,5 @@
 "use client"
+
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -16,17 +17,8 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel"
-
 import Autoplay from 'embla-carousel-autoplay';
-// Autoplay plugin removed because 'embla-carousel-autoplay' is not available in the project
-// If you install it later, re-enable the import and the plugins prop on the Carousel below
-
 import { Label } from "@/components/ui/label"
-
-export const metadata = {
-  title: 'Tati Yoga',
-  description: 'Yoga prenatal para acompañarte durante tu embarazo. Un espacio para moverte, respirar y conectar con tu cuerpo durante una de las etapas más transformadoras de tu vida.',
-}
 
 const itemscard = [
   {
