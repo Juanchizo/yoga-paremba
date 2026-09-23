@@ -23,6 +23,10 @@ import Autoplay from 'embla-carousel-autoplay';
 
 import { Label } from "@/components/ui/label"
 
+export const metadata = {
+  title: 'Tati Yoga',
+  description: 'Yoga prenatal para acompañarte durante tu embarazo. Un espacio para moverte, respirar y conectar con tu cuerpo durante una de las etapas más transformadoras de tu vida.',
+}
 
 const itemscard = [
   {
