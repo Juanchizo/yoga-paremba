@@ -37,10 +37,13 @@
     --sidebar-accent-foreground: oklch(0.214 0.009 43.1);
     --sidebar-border: oklch(0.922 0.005 34.3);
     --sidebar-ring: oklch(0.714 0.014 41.2);
+    --color-anchor:#c47e63;
+    --color-anchor-hover:#7a4c36;
+    
 }
 
 .dark {
-    --background: oklch(0.147 0.004 49.3);
+    --background: oklch(68.295% 0.00008 271.152);
     --foreground: oklch(0.986 0.002 67.8);
     --card: oklch(0.214 0.009 43.1);
     --card-foreground: oklch(0.986 0.002 67.8);
@@ -114,6 +117,8 @@
     --radius-2xl: calc(var(--radius) * 1.8);
     --radius-3xl: calc(var(--radius) * 2.2);
     --radius-4xl: calc(var(--radius) * 2.6);
+    --color-custom-gray: #dedede;
+    --color-custom-gray-2: #cecece;
 }
 
 @layer base {
@@ -194,3 +199,16 @@ Button {
   cursor: pointer;
 }
 
+a{
+  color: var(--color-anchor);
+}
+
+a:hover{
+  color: var(--color-anchor-hover);
+}
+h1, h2, h3, h4, h4, h6 {
+  color: black;
+}
+strong{
+  font-weight: 600;
+}

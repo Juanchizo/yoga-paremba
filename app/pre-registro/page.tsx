@@ -244,7 +244,7 @@ export default function Preregistro() {
                 ✕
               </button>
               <h2 className="text-2xl font-light text-[#C47E63] mb-4">🤍 Gracias por confiar en mí</h2>
-              <div className="text-gray-600 space-y-3 text-sm font-light leading-relaxed">
+              <div className="space-y-3 text-sm font-light leading-relaxed">
                 <p className="font-medium text-gray-800">Tu pre-registro ya quedó confirmado.</p>
                 <p>Estoy creando un espacio pensado para acompañarte durante el embarazo, donde puedas moverte, respirar, relajarte y conectar con tu bebé, siempre respetando el momento único que estás viviendo.</p>
                 <p>Mientras tanto, te invito a seguirme en Instagram, donde comparto información, consejos y herramientas que pueden acompañarte en esta etapa.</p>
@@ -282,7 +282,7 @@ export default function Preregistro() {
                 ✕
               </button>
               <h2 className="text-2xl font-light text-[#C47E63] mb-4">Aviso</h2>
-              <div className="text-gray-600 space-y-3 text-sm font-light leading-relaxed">
+              <div className="space-y-3 text-sm font-light leading-relaxed">
                 <p className="font-medium text-gray-800">Ya existe ese correo electrónico.</p>
                 <p>Cuando tengamos activada la membresía te contactaremos.</p>
               </div>

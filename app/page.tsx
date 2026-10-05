@@ -62,10 +62,10 @@ export default function HomePage() {
       <section className="gap-8 items-center">
         <div className="space-y-2">
 
-          <p className="text-gray-600 uppercase text-center">
+          <p className="uppercase text-center">
             Yoga prenatal, movimiento, respiración y herramientas para acompañarte durante tu embarazo, estés donde estés.
           </p>
-          <p className="text-gray-600 uppercase text-center">
+          <p className="uppercase text-center">
             Un espacio para moverte, respirar y conectar con tu cuerpo durante una de las etapas más transformadoras de tu vida.
           </p>
         </div>
@@ -119,7 +119,7 @@ export default function HomePage() {
                       <h3 className="font-semibold text-lg text-[#8FAE9C] dark:text-[#C47E63] select-none">{item.title}</h3>
                     </CardHeader>
                     <CardContent className="">
-                      <p className="text-gray-600 dark:text-white/70 select-none">{item.text}</p>
+                      <p className="dark:text-white/70 select-none">{item.text}</p>
                     </CardContent>
                   </Card>
                   </div>
@@ -159,7 +159,7 @@ export default function HomePage() {
 
       {/* 6. NO SE TRATA DE HACERLO PERFECTO */}
       <section className="items-center">
-        <div className="space-y-4 text-gray-600 text-center">
+        <div className="space-y-4 text-center">
           <h2 className="text-2xl font-light text-[#C47E63]">No se trata de hacerlo perfecto.</h2>
           <p>No creo que el embarazo tenga que vivirse siguiendo una lista de cosas que "deberías" hacer.</p>
           <p>Creo en escuchar tu cuerpo. En respetar tus tiempos. En aprender a reconocer lo que necesitás.</p>

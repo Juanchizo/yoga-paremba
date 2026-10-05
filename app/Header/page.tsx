@@ -54,16 +54,9 @@ function Header() {
             <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/')}>
                 Inicio
             </Button>
-            <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/sobre-mi')}>
-                Sobre mi
-            </Button>
-            <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/yogaprenatal')}>
+            <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/yoga-embarazadas')}>
                 Yoga Prenatal
             </Button>
-            <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/contacto')}>
-                Contacto
-            </Button>
-            
             {/* REGISTRO */}
             <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/pre-registro')}>
                 Pre-Registro
@@ -82,11 +75,7 @@ function Header() {
                     <House color='#8FAE9C'/>
                     Inicio
                     </DropdownMenuItem>
-                    <DropdownMenuItem className="!text-[#C47E63] hover:!bg-[#C47E63]/30" onClick={() => router.push('/sobre-mi')}>
-                    <Info color='#C47E63' />
-                    Sobre Mi
-                    </DropdownMenuItem>
-                    <DropdownMenuItem className="!text-[#C47E63] hover:!bg-[#C47E63]/30" onClick={() => router.push('/yogaprenatal')}>
+                    <DropdownMenuItem className="!text-[#C47E63] hover:!bg-[#C47E63]/30" onClick={() => router.push('/yoga-embarazadas')}>
                     <EyeClosed color='#C47E63' />
                     Yoga Prenatal
                     </DropdownMenuItem>
