@@ -34,7 +34,7 @@ export default function GuiaYogaPrenatalPage() {
       
       {/* HEADER DE LA GUÍA / H1 */}
       <header className="space-y-6 text-center border-b border-gray-100">
-        <h1 className="text-3xl md:text-5xl font-light text-[#C47E63] leading-tight text-center">
+        <h1 className="text-3xl md:text-5xl font-light leading-tight text-center">
           GUÍA DE YOGA PARA EMBARAZADAS: TIPOS, BENEFICIOS, POSTURAS Y CUÁNDO EMPEZAR
         </h1>
         <p className="text-base md:text-lg font-light leading-relaxed mx-auto">
@@ -50,7 +50,7 @@ export default function GuiaYogaPrenatalPage() {
 
       {/* SECCIÓN 1: QUÉ ES */}
       <section className="space-y-4">
-        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63] text-center">
+        <h2 className="text-2xl md:text-3xl font-light text-center">
           QUÉ ES YOGA PARA EMBARAZADAS
         </h2>
         <div className="space-y-4 text-gray-700 leading-relaxed font-light">

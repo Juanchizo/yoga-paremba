@@ -54,6 +54,9 @@ function Header() {
             <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/')}>
                 Inicio
             </Button>
+            <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/guia-embarazadas')}>
+                Guía para embarazadas
+            </Button>
             <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/yoga-embarazadas')}>
                 Yoga Prenatal
             </Button>
