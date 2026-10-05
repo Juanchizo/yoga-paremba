@@ -23,24 +23,24 @@ export default function GuiaYogaPrenatalPage() {
         'Uno de los pilares de la práctica. Te ayuda a conectar con tu cuerpo, encontrar momentos de calma y adquirir herramientas para el nacimiento.',
     },
     {
-      title: '🤍 Conexión',
+      title: '💗 Conexión',
       description:
         'Un espacio para bajar el ritmo, escuchar tu cuerpo y conectar con vos misma y con tu bebé.',
     },
   ];
 
   return (
-    <article className="max-w-[100rem] mx-auto px-6 py-12 text-gray-800 space-y-12">
+    <article className="max-w-[100rem] mx-auto px-6 py-12 text-gray-800 space-y-12 "> 
       
       {/* HEADER DE LA GUÍA / H1 */}
-      <header className="space-y-6 text-center border-b border-gray-100 pb-10">
-        <h1 className="text-3xl md:text-5xl font-light text-[#C47E63] leading-tight">
+      <header className="space-y-6 text-center border-b border-gray-100">
+        <h1 className="text-3xl md:text-5xl font-light text-[#C47E63] leading-tight text-center">
           GUÍA DE YOGA PARA EMBARAZADAS: TIPOS, BENEFICIOS, POSTURAS Y CUÁNDO EMPEZAR
         </h1>
-        <p className="text-base md:text-lg text-gray-600 font-light leading-relaxed max-w-2xl mx-auto">
+        <p className="text-base md:text-lg font-light leading-relaxed mx-auto">
           El yoga prenatal puede ser una gran herramienta para acompañarte durante el embarazo, ayudándote a conectar con tu cuerpo, moverte, respirar y encontrar momentos de calma.
         </p>
-        <p className="text-sm md:text-base text-gray-600 font-light max-w-2xl mx-auto">
+        <p className="text-base md:text-lg font-light mx-auto">
           En esta guía te cuento qué es el yoga para embarazadas, cuándo podés empezar, qué posturas pueden necesitar adaptación, cuáles son sus beneficios y dónde podés practicarlo.
         </p>
         <p className="text-sm font-medium text-[#C47E63] pt-2">
@@ -50,7 +50,7 @@ export default function GuiaYogaPrenatalPage() {
 
       {/* SECCIÓN 1: QUÉ ES */}
       <section className="space-y-4">
-        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63]">
+        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63] text-center">
           QUÉ ES YOGA PARA EMBARAZADAS
         </h2>
         <div className="space-y-4 text-gray-700 leading-relaxed font-light">
@@ -83,7 +83,7 @@ export default function GuiaYogaPrenatalPage() {
 
       {/* SECCIÓN 2: TIPOS Y SEGURIDAD */}
       <section className="space-y-6">
-        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63]">
+        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63] text-center">
           ¿QUÉ TIPO DE YOGA PUEDE HACER Y ES SEGURO PARA UNA EMBARAZADA?
         </h2>
         <div className="space-y-4 text-gray-700 leading-relaxed font-light">
@@ -94,27 +94,17 @@ export default function GuiaYogaPrenatalPage() {
             No se trata de hacer las mismas posturas que practicarías fuera del embarazo. A medida que tu cuerpo cambia, también puede cambiar tu forma de moverte y tu práctica puede necesitar adaptaciones.
           </p>
         </div>
-        <div className='flex justify-content items-center w-full'>
-          <Carousel>
-            <CarouselContent className='max-w-xl min-h-sm basis-1/2'>
-            {prenatalYogaItems.map((item, index) => (
-              <CarouselItem key={index}>
-                <div className='p2'>
-                <Card>
-                  <CardHeader>
-                    {item.title}
-                  </CardHeader>
-                  <CardDescription>
-                    {item.description}
-                  </CardDescription>
-                </Card>
-                </div>
-              </CarouselItem>
-            ))}
-            </CarouselContent>
-            <CarouselPrevious />
-            <CarouselNext />
-          </Carousel>
+        <div className="grid gap-4 md:grid-cols-2">
+          {prenatalYogaItems.map((item,index)=>{
+            return(
+              <div key={index} className="p-4 border rounded-xl space-y-1 bg-custom-gray">
+                <h3 className="font-medium text-gray-800">{item.title}</h3>
+                <p className="text-sm font-light">
+                  {item.description}
+                </p>
+              </div>
+            )
+          })}
         </div>
 
         <div className="space-y-3 pt-2 text-gray-700 font-light">
@@ -134,7 +124,7 @@ export default function GuiaYogaPrenatalPage() {
 
       {/* SECCIÓN 3: CUÁNDO EMPEZAR (TRIMESTRES) */}
       <section className="space-y-6">
-        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63]">
+        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63] text-center">
           ¿CUÁNDO EMPEZAR A HACER YOGA PARA EMBARAZADAS?
         </h2>
         <p className="text-gray-700 font-light">
@@ -142,23 +132,23 @@ export default function GuiaYogaPrenatalPage() {
         </p>
 
         <div className="space-y-4">
-          <div className="p-5 border-l-4 border-[#C47E63] bg-stone-50 rounded-r-xl space-y-2">
+          <div className="p-5 border-l-4 border-[#C47E63] bg-custom-gray rounded-r-xl space-y-2">
             <h3 className="font-medium text-lg text-[#C47E63]">🌱 Primer trimestre</h3>
-            <p className="text-sm text-gray-600 font-light">
+            <p className="text-sm font-light">
               Es una etapa de grandes cambios, ideal para comenzar a conectar con tu cuerpo, observar cómo te sentís y trabajar la respiración y la relajación. Si tu profesional de salud lo considera adecuado, podés realizar movimientos y posturas suaves, especialmente si aparecen náuseas o cansancio. Escucharte y respetar tus tiempos es parte de la práctica.
             </p>
           </div>
 
-          <div className="p-5 border-l-4 border-[#C47E63] bg-stone-50 rounded-r-xl space-y-2">
+          <div className="p-5 border-l-4 border-[#C47E63] bg-custom-gray rounded-r-xl space-y-2">
             <h3 className="font-medium text-lg text-[#C47E63]">🌿 Segundo trimestre</h3>
-            <p className="text-sm text-gray-600 font-light">
+            <p className="text-sm font-light">
               Muchas mujeres comienzan a sentirse con más energía. A medida que el abdomen crece, la práctica se enfoca en mantener la movilidad y acompañar zonas como la espalda, la pelvis y las caderas, además de trabajar la respiración.
             </p>
           </div>
 
-          <div className="p-5 border-l-4 border-[#C47E63] bg-stone-50 rounded-r-xl space-y-2">
+          <div className="p-5 border-l-4 border-[#C47E63] bg-custom-gray rounded-r-xl space-y-2">
             <h3 className="font-medium text-lg text-[#C47E63]">🌸 Tercer trimestre</h3>
-            <p className="text-sm text-gray-600 font-light">
+            <p className="text-sm font-light">
               La práctica se orienta hacia movimientos suaves, posiciones de descanso, respiración y relajación. Se incorporan movimientos que favorezcan la movilidad de la pelvis y la comodidad de manera adaptada con elementos de apoyo.
             </p>
           </div>
@@ -177,7 +167,7 @@ export default function GuiaYogaPrenatalPage() {
 
       {/* SECCIÓN 4: QUÉ POSTURAS EVITAR */}
       <section className="space-y-6">
-        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63]">
+        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63] text-center">
           ¿QUÉ POSTURAS DE YOGA NO DEBE HACER UNA EMBARAZADA?
         </h2>
         <p className="text-gray-700 font-light">
@@ -185,44 +175,44 @@ export default function GuiaYogaPrenatalPage() {
         </p>
 
         <div className="grid gap-4 md:grid-cols-2">
-          <div className="p-4 border rounded-xl space-y-1">
+          <div className="p-4 border rounded-xl space-y-1 bg-custom-gray">
             <h3 className="font-medium text-gray-800">🤰 Presión sobre el abdomen</h3>
-            <p className="text-sm text-gray-600 font-light">
+            <p className="text-sm font-light">
               A medida que crece la panza, las posturas de presión directa se modifican usando bloques, mantas, bolsters, pelotas o sillas.
             </p>
           </div>
 
-          <div className="p-4 border rounded-xl space-y-1">
+          <div className="p-4 border rounded-xl space-y-1 bg-custom-gray">
             <h3 className="font-medium text-gray-800">🧘‍♀️ Mucho equilibrio</h3>
-            <p className="text-sm text-gray-600 font-light">
+            <p className="text-sm font-light">
               Si te sentís inestable al cambiar tu centro de gravedad, podés usar una pared o silla como apoyo para practicar segura.
             </p>
           </div>
 
-          <div className="p-4 border rounded-xl space-y-1">
+          <div className="p-4 border rounded-xl space-y-1 bg-custom-gray">
             <h3 className="font-medium text-gray-800">🌿 Dolor o incomodidad</h3>
-            <p className="text-sm text-gray-600 font-light">
+            <p className="text-sm font-light">
               Si una postura causa dolor o mareo, hay que detenerse. Un estiramiento suave está bien, pero el dolor nunca se ignora.
             </p>
           </div>
 
-          <div className="p-4 border rounded-xl space-y-1">
+          <div className="p-4 border rounded-xl space-y-1 bg-custom-gray">
             <h3 className="font-medium text-gray-800">🔥 Prácticas muy intensas</h3>
-            <p className="text-sm text-gray-600 font-light">
+            <p className="text-sm font-light">
               No es recomendable empezar de repente con ejercicios hiper exigentes. El yoga prenatal busca acompañar, no llevarte al límite.
             </p>
           </div>
 
-          <div className="p-4 border rounded-xl space-y-1">
+          <div className="p-4 border rounded-xl space-y-1 bg-custom-gray">
             <h3 className="font-medium text-gray-800">🌡️ Ambientes calurosos</h3>
-            <p className="text-sm text-gray-600 font-light">
+            <p className="text-sm font-light">
               Deben evitarse ambientes con temperaturas muy elevadas (como Bikram yoga).
             </p>
           </div>
 
-          <div className="p-4 border rounded-xl space-y-1">
+          <div className="p-4 border rounded-xl space-y-1 bg-custom-gray">
             <h3 className="font-medium text-gray-800">🛌 Boca arriba prolongado</h3>
-            <p className="text-sm text-gray-600 font-light">
+            <p className="text-sm font-light">
               Estar boca arriba durante mucho tiempo puede resultar incómodo en etapas avanzadas. Se adapta recostándose de lado con almohadones.
             </p>
           </div>
@@ -231,62 +221,62 @@ export default function GuiaYogaPrenatalPage() {
 
       {/* SECCIÓN 5: BENEFICIOS */}
       <section className="space-y-6">
-        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63]">
+        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63] text-center">
           ¿CUÁLES SON LOS BENEFICIOS DE HACER YOGA DURANTE EL EMBARAZO?
         </h2>
 
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="p-4 bg-stone-50 rounded-xl space-y-1">
+          <div className="p-4 bg-custom-gray rounded-xl space-y-1">
             <h3 className="font-medium text-[#C47E63]">🧘‍♀️ Mantenerte activa</h3>
-            <p className="text-xs text-gray-600 font-light">Movimiento adaptado a cada etapa de manera consciente.</p>
+            <p className="text-xs font-light">Movimiento adaptado a cada etapa de manera consciente.</p>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-xl space-y-1">
+          <div className="p-4 bg-custom-gray rounded-xl space-y-1">
             <h3 className="font-medium text-[#C47E63]">🌿 Movilidad y conciencia</h3>
-            <p className="text-xs text-gray-600 font-light">Aprender a reconocer qué movimientos te resultan cómodos.</p>
+            <p className="text-xs font-light">Aprender a reconocer qué movimientos te resultan cómodos.</p>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-xl space-y-1">
+          <div className="p-4 bg-custom-gray rounded-xl space-y-1">
             <h3 className="font-medium text-[#C47E63]">🤍 Acompañar molestias</h3>
-            <p className="text-xs text-gray-600 font-light">Ayuda a aliviar tensiones musculares y molestias en la zona lumbar.</p>
+            <p className="text-xs font-light">Ayuda a aliviar tensiones musculares y molestias en la zona lumbar.</p>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-xl space-y-1">
+          <div className="p-4 bg-custom-gray rounded-xl space-y-1">
             <h3 className="font-medium text-[#C47E63]">🌬️ Herramientas de respiración</h3>
-            <p className="text-xs text-gray-600 font-light">Ejercicios para encontrar calma y que te servirán para el nacimiento.</p>
+            <p className="text-xs font-light">Ejercicios para encontrar calma y que te servirán para el nacimiento.</p>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-xl space-y-1">
+          <div className="p-4 bg-custom-gray rounded-xl space-y-1">
             <h3 className="font-medium text-[#C47E63]">🧠 Relajación y calma</h3>
-            <p className="text-xs text-gray-600 font-light">Un espacio para bajar el ritmo en medio de la rutina diaria.</p>
+            <p className="text-xs font-light">Un espacio para bajar el ritmo en medio de la rutina diaria.</p>
           </div>
 
-          <div className="p-4 bg-stone-50 rounded-xl space-y-1">
+          <div className="p-4 bg-custom-gray rounded-xl space-y-1">
             <h3 className="font-medium text-[#C47E63]">👶 Conectar con tu bebé</h3>
-            <p className="text-xs text-gray-600 font-light">Momento para habitar la gestación de manera presente.</p>
+            <p className="text-xs font-light">Momento para habitar la gestación de manera presente.</p>
           </div>
         </div>
       </section>
 
       {/* SECCIÓN 6: DÓNDE PRACTICAR */}
       <section className="space-y-6 border-t border-gray-100 pt-8">
-        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63]">
+        <h2 className="text-2xl md:text-3xl font-light text-[#C47E63] text-center">
           ¿DÓNDE PRACTICAR YOGA DURANTE EL EMBARAZO?
         </h2>
 
         <div className="grid md:grid-cols-2 gap-6">
-          <div className="p-5 border rounded-xl space-y-2">
+          <div className="p-5 border rounded-xl space-y-2 bg-custom-gray">
             <h3 className="font-medium text-lg text-gray-800">🌿 Clases presenciales</h3>
-            <ul className="text-sm text-gray-600 font-light space-y-1 list-disc list-inside">
+            <ul className="text-sm font-light space-y-1 list-disc list-inside">
               <li>Acompañamiento cercano de una profesora.</li>
               <li>Compartir la experiencia con otras futuras mamás.</li>
               <li>Un espacio para salir de la rutina.</li>
             </ul>
           </div>
 
-          <div className="p-5 border rounded-xl space-y-2">
-            <h3 className="font-medium text-lg text-gray-800">🤍 Clases desde casa (Online)</h3>
-            <ul className="text-sm text-gray-600 font-light space-y-1 list-disc list-inside">
+          <div className="p-5 border rounded-xl space-y-2 bg-custom-gray">
+            <h3 className="font-medium text-lg text-gray-800">💗 Clases desde casa (Online)</h3>
+            <ul className="text-sm font-light space-y-1 list-disc list-inside">
               <li>Flexibilidad para practicar según tu energía.</li>
               <li>Comodidad sin necesidad de trasladarte.</li>
               <li>Comunidad online para no sentirte sola.</li>
@@ -295,22 +285,22 @@ export default function GuiaYogaPrenatalPage() {
         </div>
 
         {/* CTA FINAL DE PRE-REGISTRO */}
-        <div className="p-8 bg-stone-50 rounded-2xl text-center space-y-4 max-w-xl mx-auto mt-8 border border-[#C47E63]/20">
-          <h3 className="text-xl font-light text-[#C47E63]">
+        <div className="p-8 bg-custom-gray rounded-2xl text-center space-y-4 max-w-xl mx-auto mt-8 border border-[#C47E63]/20">
+          <h3 className="text-xl text-[#C47E63]">
             Mi propuesta para acompañarte
           </h3>
-          <p className="text-sm text-gray-600 font-light leading-relaxed">
+          <p className="text-sm font-light leading-relaxed">
             Estoy creando un espacio online para acompañarte durante tu embarazo a través del yoga prenatal, el movimiento, la respiración y la relajación. La membresía todavía está en preparación.
           </p>
           <div className="pt-2">
             <Link
-              href="#"
-              className="inline-block bg-[#C47E63] text-white px-6 py-3 rounded-full text-sm font-medium hover:opacity-90 transition-all shadow-sm"
+              href="/pre-registro"
+              className="inline-block bg-custom-gray-2 text-white px-6 py-3 rounded-full text-sm font-medium hover:opacity-90 transition-all shadow-sm"
             >
               QUIERO PRE-REGISTRARME →
             </Link>
           </div>
-          <p className="text-xs text-gray-400">Te avisaré cuando abramos las puertas.</p>
+          <p className="text-xs text-gray-600">Te avisaré cuando abramos las puertas.</p>
         </div>
       </section>
 

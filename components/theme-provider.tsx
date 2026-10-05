@@ -10,64 +10,27 @@ type ThemeContextValue = {
   setTheme: (theme: Theme) => void
 }
 
-const THEME_STORAGE_KEY = "theme"
 const ThemeContext = React.createContext<ThemeContextValue | null>(null)
 
-function getPreferredTheme(): Theme {
-  if (typeof window === "undefined") {
-    return "light"
-  }
-
-  const stored = window.localStorage.getItem(THEME_STORAGE_KEY)
-  if (stored === "light" || stored === "dark") {
-    return stored
-  }
-
-  return window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"
-}
-
 function ThemeProvider({ children }: { children: React.ReactNode }) {
-  const [theme, setThemeState] = React.useState<Theme>("light")
-
+  // Asegurarse de que la clase "dark" se remueva siempre y nunca se agregue
   React.useEffect(() => {
-    const initialTheme = getPreferredTheme()
-    setThemeState(initialTheme)
-    document.documentElement.classList.toggle("dark", initialTheme === "dark")
-  }, [])
-
-  const setTheme = React.useCallback((nextTheme: Theme) => {
-    setThemeState(nextTheme)
-    document.documentElement.classList.toggle("dark", nextTheme === "dark")
-    window.localStorage.setItem(THEME_STORAGE_KEY, nextTheme)
+    document.documentElement.classList.remove("dark")
   }, [])
 
   const value = React.useMemo<ThemeContextValue>(
     () => ({
-      theme,
-      resolvedTheme: theme,
-      setTheme,
+      theme: "light",
+      resolvedTheme: "light",
+      setTheme: () => {}, // Desactivamos el cambio de tema
     }),
-    [setTheme, theme]
+    []
   )
 
   return (
     <ThemeContext.Provider value={value}>
-      <ThemeHotkey />
       {children}
     </ThemeContext.Provider>
-  )
-}
-
-function isTypingTarget(target: EventTarget | null) {
-  if (!(target instanceof HTMLElement)) {
-    return false
-  }
-
-  return (
-    target.isContentEditable ||
-    target.tagName === "INPUT" ||
-    target.tagName === "TEXTAREA" ||
-    target.tagName === "SELECT"
   )
 }
 
@@ -79,40 +42,6 @@ function useTheme() {
   }
 
   return context
-}
-
-function ThemeHotkey() {
-  const { resolvedTheme, setTheme } = useTheme()
-
-  React.useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.defaultPrevented || event.repeat) {
-        return
-      }
-
-      if (event.metaKey || event.ctrlKey || event.altKey) {
-        return
-      }
-
-      if (event.key.toLowerCase() !== "d") {
-        return
-      }
-
-      if (isTypingTarget(event.target)) {
-        return
-      }
-
-      setTheme(resolvedTheme === "dark" ? "light" : "dark")
-    }
-
-    window.addEventListener("keydown", onKeyDown)
-
-    return () => {
-      window.removeEventListener("keydown", onKeyDown)
-    }
-  }, [resolvedTheme, setTheme])
-
-  return null
 }
 
 export { ThemeProvider, useTheme }

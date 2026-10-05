@@ -45,7 +45,7 @@ export default function Footer() {
           <p className="text-sm uppercase tracking-[0.2em] text-background">
             Tati Montero <strong className="font-semibold">Yoga</strong>
           </p>
-          <Link href="/terminos" className="text-sm text-background hover:underline block">
+          <Link href="/terminos" className="text-sm !text-white hover:underline block">
             Términos y Condiciones
           </Link>
         </div>
@@ -65,7 +65,7 @@ export default function Footer() {
 
         <div className="flex flex-col items-start gap-2 text-sm text-background sm:items-end">
           <span>&copy; {new Date().getFullYear()} Tati Montero Yoga.</span>
-          <Link href="/politicas" className="hover:underline ">
+          <Link href="/politicas" className="!text-white hover:underline">
             Políticas de Privacidad
           </Link>
         </div>
