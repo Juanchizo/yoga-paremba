@@ -51,24 +51,24 @@ function Header() {
 
         {/* Navegación */}
         <nav className="hidden lg:flex items-center gap-4 text-sm tracking-wide font-light">
-            <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/')}>
+            <Button className="bg-background hover:bg-[#C47E63]/20 !text-[#C47E63] transition-colors" variant={"outline"} onClick={() => router.push('/')}>
                 Inicio
             </Button>
-            <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/guia-embarazadas')}>
+            <Button className="bg-background hover:bg-[#C47E63]/20 !text-[#C47E63] transition-colors" variant={"outline"} onClick={() => router.push('/guia-embarazadas')}>
                 Guía para embarazadas
             </Button>
-            <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/yoga-embarazadas')}>
+            <Button className="bg-background hover:bg-[#C47E63]/20 !text-[#C47E63] transition-colors" variant={"outline"} onClick={() => router.push('/yoga-embarazadas')}>
                 Yoga Prenatal
             </Button>
             {/* REGISTRO */}
-            <Button className="bg-background hover:bg-[#C47E63]/30 !text-[#C47E63] hover:px-10" variant={"outline"} onClick={() => router.push('/pre-registro')}>
+            <Button className="bg-background hover:bg-[#C47E63]/20 !text-[#C47E63] transition-colors" variant={"outline"} onClick={() => router.push('/pre-registro')}>
                 Pre-Registro
             </Button>
         </nav>
 
         <div className='lg:hidden flex'>
             <DropdownMenu >
-                <DropdownMenuTrigger className="!text-[#C47E63] dark:!text-[#C47E63] hover:px-8" 
+                <DropdownMenuTrigger className="!text-[#C47E63] dark:!text-[#C47E63] transition-colors" 
                 render={<Button variant={"outline"}></Button>}>
                     <Menu color='#C47E63'/>Menu
                 </DropdownMenuTrigger>

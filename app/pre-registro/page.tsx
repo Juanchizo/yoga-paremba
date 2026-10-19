@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { FieldGroup, Field, FieldLabel } from "@/components/ui/field"
@@ -23,44 +23,22 @@ export default function Preregistro() {
   const [whatsapp, setWhatsapp] = useState("")
   const [semanasEmbarazo, setSemanasEmbarazo] = useState("")
   
-  const [avisoCorreo, setAvisoCorreo] = useState(false)
-  const [avisoWhatsapp, setAvisoWhatsapp] = useState(false)
-  
   const [loading, setLoading] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [showExistModal, setShowExistModal] = useState(false)
-
-  // Ya no necesitamos los useEffect que desmarcan los checkboxes
-  // porque el flujo es al revés: primero marcan, luego escriben.
-
-  useEffect(() => {
-    const header = document.querySelector("header")
-    const previousDisplay = header?.style.display
-    if (header) {
-      header.style.display = "none"
-    }
-    return () => {
-      if (header) {
-        header.style.display = previousDisplay || ""
-      }
-    }
-  }, [])
 
   async function registrar(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     
-    let preferencia_aviso = "ninguno";
-    if (avisoCorreo && avisoWhatsapp) preferencia_aviso = "ambos";
-    else if (avisoCorreo) preferencia_aviso = "correo";
-    else if (avisoWhatsapp) preferencia_aviso = "whatsapp";
+    const preferencia_aviso = whatsapp.trim() !== "" ? "ambos" : "correo";
 
     const payload = {
-      nombre,
-      pais,
+      nombre: nombre.trim(),
+      pais: pais.trim(),
       fecha_nacimiento: fechaNacimiento,
-      email: avisoCorreo ? email : "",
-      whatsapp: avisoWhatsapp ? whatsapp : "",
+      email: email.trim(),
+      whatsapp: whatsapp.trim(),
       semanas_embarazo: semanasEmbarazo ? parseInt(semanasEmbarazo) : 0,
       preferencia_aviso
     };
@@ -103,15 +81,13 @@ export default function Preregistro() {
 
   // Validación estricta para habilitar el botón
   const isBaseValid = nombre.trim() !== "" && pais.trim() !== "" && fechaNacimiento.trim() !== "" && semanasEmbarazo.trim() !== "";
-  const isCheckValid = avisoCorreo || avisoWhatsapp;
-  const isEmailValid = avisoCorreo ? email.trim() !== "" : true;
-  const isWhatsappValid = avisoWhatsapp ? whatsapp.trim() !== "" : true;
+  const isEmailValid = email.trim() !== "";
   
-  const canSubmit = isBaseValid && isCheckValid && isEmailValid && isWhatsappValid && !loading;
+  const canSubmit = isBaseValid && isEmailValid && !loading;
 
   return (
-    <div className="min-h-screen flex items-center justify-center py-10 px-4">
-        <Card className="w-full max-w-lg shadow-md border-[#C47E63]/20">
+    <div className="flex items-center justify-center py-6 px-4">
+        <Card className="w-full max-w-lg shadow-md border-[#C47E63]/20 bg-[var(--color-crema)]">
           <form onSubmit={registrar}>
             <CardHeader className="text-center">
               <CardTitle className="text-2xl font-light text-[#C47E63]">Pre-Registro</CardTitle>
@@ -127,6 +103,7 @@ export default function Preregistro() {
                     id="input_nombre"
                     placeholder="Tu nombre y apellido"
                     value={nombre}
+                    className="bg-[var(--color-marfil)] shadow-md px-6 box-border"
                     onChange={(e) => setNombre(e.target.value)}
                     required
                   />
@@ -137,6 +114,7 @@ export default function Preregistro() {
                     id="input_pais"
                     placeholder="Ej. Argentina, México, España..."
                     value={pais}
+                    className="bg-[var(--color-marfil)] shadow-md px-6 box-border"
                     onChange={(e) => setPais(e.target.value)}
                     required
                   />
@@ -147,6 +125,7 @@ export default function Preregistro() {
                     id="input_dob"
                     type="date"
                     value={fechaNacimiento}
+                    className="bg-[var(--color-marfil)] shadow-md px-6 box-border"
                     onChange={(e) => setFechaNacimiento(e.target.value)}
                     required
                   />
@@ -159,69 +138,41 @@ export default function Preregistro() {
                     min="1"
                     max="42"
                     placeholder="Ej. 20"
+                    className="bg-[var(--color-marfil)] shadow-md px-6 box-border"
                     value={semanasEmbarazo}
                     onChange={(e) => setSemanasEmbarazo(e.target.value)}
                     required
                   />
                 </Field>
                 
-                <div className="pt-2">
-                  <FieldLabel className="mb-2 block text-sm font-medium">¿Cómo te gustaría que te avisemos cuando abra la membresía?</FieldLabel>
-                  <div className="flex gap-4">
-                    <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
-                      <input 
-                        type="checkbox" 
-                        className="w-4 h-4 accent-[#C47E63] rounded border-gray-300" 
-                        checked={avisoCorreo} 
-                        onChange={(e) => {
-                          setAvisoCorreo(e.target.checked);
-                          if (!e.target.checked) setEmail(""); // limpiar si se desmarca
-                        }} 
-                      />
-                      Correo
-                    </label>
-                    <label className="flex items-center gap-2 cursor-pointer text-sm text-gray-700">
-                      <input 
-                        type="checkbox" 
-                        className="w-4 h-4 accent-[#C47E63] rounded border-gray-300" 
-                        checked={avisoWhatsapp} 
-                        onChange={(e) => {
-                          setAvisoWhatsapp(e.target.checked);
-                          if (!e.target.checked) setWhatsapp(""); // limpiar si se desmarca
-                        }} 
-                      />
-                      WhatsApp
-                    </label>
-                  </div>
-                </div>
+                <Field>
+                  <FieldLabel htmlFor="input_email">
+                    Email <span className="text-xs text-[#C47E63] font-normal">(obligatorio)</span>
+                  </FieldLabel>
+                  <Input
+                    id="input_email"
+                    type="email"
+                    placeholder="yoga@ejemplo.com"
+                    className="bg-[var(--color-marfil)] shadow-md px-6 box-border"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </Field>
 
-                {avisoCorreo && (
-                  <Field className="animate-in fade-in zoom-in-95 duration-200">
-                    <FieldLabel htmlFor="input_email">Email</FieldLabel>
-                    <Input
-                      id="input_email"
-                      type="email"
-                      placeholder="yoga@ejemplo.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required={avisoCorreo}
-                    />
-                  </Field>
-                )}
-
-                {avisoWhatsapp && (
-                  <Field className="animate-in fade-in zoom-in-95 duration-200">
-                    <FieldLabel htmlFor="input_wa">WhatsApp</FieldLabel>
-                    <Input
-                      id="input_wa"
-                      type="tel"
-                      placeholder="+54 9 11 1234 5678"
-                      value={whatsapp}
-                      onChange={(e) => setWhatsapp(e.target.value)}
-                      required={avisoWhatsapp}
-                    />
-                  </Field>
-                )}
+                <Field>
+                  <FieldLabel htmlFor="input_wa">
+                    WhatsApp <span className="text-xs text-[#C47E63] font-normal">(opcional)</span>
+                  </FieldLabel>
+                  <Input
+                    id="input_wa"
+                    type="tel"
+                    placeholder="+54 9 11 1234 5678"
+                    className="bg-[var(--color-marfil)] shadow-md px-6 box-border"
+                    value={whatsapp}
+                    onChange={(e) => setWhatsapp(e.target.value)}
+                  />
+                </Field>
               </FieldGroup>
             </CardContent>
             <CardFooter>
