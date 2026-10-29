@@ -257,28 +257,30 @@ export default function HomePage() {
       </section>
 
       {/* 7. HERRAMIENTAS */}
-      <section className="flex flex-col gap-2 text-center">
-        <h2 >Herramientas para acompañarte durante tu embarazo</h2>
-        <p className="">Un espacio para aprender, practicar y conectar con vos misma.</p>
+      <section className="flex flex-col gap-4 text-center md:gap-6">
+        <div className="space-y-2">
+          <h2>Herramientas para acompañarte durante tu embarazo</h2>
+          <p>Un espacio para aprender, practicar y conectar con vos misma.</p>
+        </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-left">
-          <div className="p-3 border rounded-lg bg-[var(--color-crema)]">
+        <div className="grid grid-cols-2 gap-3 text-left md:grid-cols-5 md:gap-4">
+          <div className="rounded-lg border bg-[var(--color-crema)] p-3">
             <p className="font-semibold text-[var(--color-verde-azulado)]">🧠 Entiende tu cuerpo</p>
             <p className="text-xs">Información para comprender los cambios de tu cuerpo.</p>
           </div>
-          <div className="p-3 border rounded-lg bg-[var(--color-crema)]">
+          <div className="rounded-lg border bg-[var(--color-crema)] p-3">
             <p className="font-semibold text-[var(--color-verde-azulado)]">🧘‍♀️ Practica conmigo</p>
             <p className="text-xs">Movimientos y prácticas de yoga prenatal.</p>
           </div>
-          <div className="p-3 border rounded-lg bg-[var(--color-crema)]">
+          <div className="rounded-lg border bg-[var(--color-crema)] p-3">
             <p className="font-semibold text-[var(--color-verde-azulado)]">🌬️ Respira conmigo</p>
             <p className="text-xs">Respiraciones para encontrar calma y conexión.</p>
           </div>
-          <div className="p-3 border rounded-lg bg-[var(--color-crema)]">
+          <div className="rounded-lg border bg-[var(--color-crema)] p-3">
             <p className="font-semibold text-[var(--color-verde-azulado)]">🤎 Un momento para vos</p>
             <p className="text-xs">Pequeños espacios para parar y escucharte.</p>
           </div>
-          <div className="p-3 border rounded-lg bg-[var(--color-crema)] col-span-2 md:col-span-1">
+          <div className="col-span-2 rounded-lg border bg-[var(--color-crema)] p-3 md:col-span-1">
             <p className="font-semibold text-[var(--color-verde-azulado)]">🌸 Preparándote</p>
             <p className="text-xs">Herramientas para el momento del nacimiento.</p>
           </div>
@@ -286,48 +288,46 @@ export default function HomePage() {
       </section>
 
       {/* 8. FORMULARIO RECURSO GRATUITO */}
-      <section className="grid grid-cols-1 md:grid-cols-7 py-4 text-center gap-6">
-        <div className="relative flex md:col-span-2" >
-            <Image
-              src="/galeria/portada-guia-embarazada.webp"
-              alt="Guía de yoga para embarazadas"
-              fill
-              sizes="(max-width: 768px) 100vw, 500px"
-              className="object-contain"
-              >
-
-            </Image>
-          </div>
-        <div className="md:col-span-2">
-          <h2>Empezá a acompañarte hoy</h2>
-          <p className="">
-            Mientras preparo este espacio para vos, podés empezar a incorporar pequeñas herramientas de movimiento, respiración y conexión a tu día a día.
-          </p>
-          
+      <section className="grid grid-cols-1 gap-6 py-6 text-center md:grid-cols-7 md:gap-8 md:py-8">
+        <div className="relative h-72 w-full overflow-hidden rounded-xl md:col-span-2 md:h-full">
+          <Image
+            src="/galeria/portada-guia-embarazada.webp"
+            alt="Guía de yoga para embarazadas"
+            fill
+            sizes="(max-width: 768px) 100vw, 500px"
+            className="object-contain"
+          />
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-4 text-left">
+        <div className="flex flex-col justify-center gap-3 text-left md:col-span-2">
+          <h2>Empezá a acompañarte hoy</h2>
+          <p>
+            Mientras preparo este espacio para vos, podés empezar a incorporar pequeñas herramientas de movimiento, respiración y conexión a tu día a día.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit} className="space-y-4 text-left md:col-span-3">
           <div>
-            <label className="text-xs font-medium text-gray-300 mb-1 block">Tu Nombre</label>
+            <label className="mb-1 block text-xs font-medium text-gray-300">Tu Nombre</label>
             <Input
               type="text"
               placeholder="Ej. María"
               required
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              className="bg-background/50 border-[#C47E63]/30"
+              className="border-[#C47E63]/30 bg-background/50"
             />
           </div>
 
           <div>
-            <label className="text-xs font-medium text-gray-300 mb-1 block">Correo Electrónico</label>
+            <label className="mb-1 block text-xs font-medium text-gray-300">Correo Electrónico</label>
             <Input
               type="email"
               placeholder="tu@correo.com"
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="bg-background/50 border-[#C47E63]/30"
+              className="border-[#C47E63]/30 bg-background/50"
             />
           </div>
 
@@ -335,7 +335,7 @@ export default function HomePage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full bg-custom-gray-2 text-white px-6 py-6 rounded-full text-sm font-medium hover:opacity-90 transition-all shadow-sm"
+              className="w-full rounded-full bg-custom-gray-2 px-6 py-6 text-sm font-medium text-white shadow-sm transition-all hover:opacity-90"
             >
               {loading ? (
                 <>
