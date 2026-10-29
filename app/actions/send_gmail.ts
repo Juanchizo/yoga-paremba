@@ -21,7 +21,7 @@ export async function sendPdfAction(nombre: string, email: string): Promise<ApiR
     const data: ApiResponse = await res.json();
 
     if (!res.ok) {
-      return { status: "error", message: data.message || "Error al procesar la solicitud" };
+      return { status: "error", message: data.message};
     }
 
     return data;
