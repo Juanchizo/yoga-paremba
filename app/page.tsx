@@ -334,7 +334,7 @@ export default function HomePage() {
             <Button
               type="submit"
               disabled={loading}
-              className="w-full rounded-full bg-custom-gray-2 px-6 py-6 text-sm font-medium text-white shadow-sm transition-all hover:opacity-90"
+              className="w-full !bg-[#C47E63] hover:opacity-90"
             >
               {loading ? (
                 <>
@@ -344,9 +344,10 @@ export default function HomePage() {
                 "QUIERO PRE-REGISTRARME →"
               )}
             </Button>
+            <p className="text-xs text-gray-500">Te avisaré cuando abramos las puertas.</p>
           </div>
         </form>
-        <p className="text-xs text-gray-500">Te avisaré cuando abramos las puertas.</p>
+        
       </section>
 
     </div>
