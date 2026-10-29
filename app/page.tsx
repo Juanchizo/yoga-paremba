@@ -8,7 +8,6 @@ import { sendPdfAction } from "@/app/actions/send_gmail"; // Ajusta la ruta de t
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner"; // O tu librería de notificaciones
 import {
   Avatar,
   AvatarFallback,
@@ -66,10 +65,10 @@ export default function HomePage() {
     setLoading(false);
 
     if (res.status === "success") {
-      toast.success(res.message || "¡Te has pre-registrado con éxito! Revisa tu correo.");
+      alert(res.message || "¡Te has pre-registrado con éxito! Revisa tu correo.");
       setFormData({ nombre: "", email: "" }); // Limpiar formulario
     } else {
-      toast.error(res.message || "Ocurrió un error. Inténtalo de nuevo.");
+      alert(res.message || "Ocurrió un error. Inténtalo de nuevo.");
     }
   };
 
