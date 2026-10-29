@@ -6,7 +6,7 @@ interface ApiResponse {
 }
 
 export async function sendPdfAction(nombre: string, email: string): Promise<ApiResponse> {
-  const PHP_ENDPOINT = "https://www.tatimonteroyoga.com/correos_recursos_gratuitos.php"; // Cambia por tu dominio real
+  const PHP_ENDPOINT = "https://api.guiadeparche.com/yogaparemba/correos_recursos_gratuitos.php"; // Cambia por tu dominio real
 
   try {
     const res = await fetch(PHP_ENDPOINT, {
@@ -21,7 +21,7 @@ export async function sendPdfAction(nombre: string, email: string): Promise<ApiR
     const data: ApiResponse = await res.json();
 
     if (!res.ok) {
-      return { status: "error", message: data.message};
+      return { status: "error", message: datas.message};
     }
 
     return data;
