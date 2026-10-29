@@ -43,10 +43,15 @@ const itemscard = [
   }
 ];
 
+import { useState } from 'react';
 
 import miFoto from "@/public/tatifoto.png"
+import { sendPdfAction } from './actions/send_gmail';
 
 export default function HomePage() {
+  const [nombre, setNombre] = useState('');
+  const [email, setEmail] = useState('');
+
   // const plugin = React.useRef(
   //   Autoplay({ delay: 2000, stopOnInteraction: true })
   // )
@@ -284,13 +289,21 @@ export default function HomePage() {
           <h3 >QUIERO RECIBIR EL RECURSO GRATUITO</h3>
           <div>
             <label className="text-xs font-semibold text-[var(--text-color)]">Nombre</label>
-            <input type="text" className="w-full border p-2 rounded  mt-1 focus:outline-none bg-white" required />
+            <input type="text" className="w-full border p-2 rounded  mt-1 focus:outline-none bg-white" onChange={(e) => setNombre(e.target.value)} required />
           </div>
           <div>
             <label className="text-xs font-semibold text-[var(--text-color)]">Email</label>
-            <input type="email" className="w-full border p-2 rounded  mt-1 focus:outline-none bg-white" required />
+            <input type="email" className="w-full border p-2 rounded  mt-1 focus:outline-none bg-white" onChange={(e) => setEmail(e.target.value)} required />
           </div>
-          <button type="submit" className="w-full bg-[#C47E63] text-white py-2 rounded  font-medium hover:opacity-90">
+          <button type="submit" className="w-full bg-[#C47E63] text-white py-2 rounded  font-medium hover:opacity-90" onClick={async (e) => {
+            e.preventDefault();
+            const response = await sendPdfAction(nombre, email);
+            if (response.status === "success") {
+              alert("¡Recursos enviados! Revisa tu correo.");
+            } else {
+              alert("Error al enviar los recursos. Inténtalo de nuevo.");
+            }
+          }}>
             QUIERO RECIBIRLO
           </button>
           <p className="text-[10px] text-gray-400 text-center pt-1">
