@@ -307,26 +307,26 @@ export default function HomePage() {
 
         <form onSubmit={handleSubmit} className="space-y-4 text-left md:col-span-3">
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-300">Tu Nombre</label>
+            <label className="mb-1 block text-xs font-medium text-[#C47E63]">Tu Nombre</label>
             <Input
               type="text"
               placeholder="Ej. María"
               required
               value={formData.nombre}
               onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
-              className="border-[#C47E63]/30 bg-background/50"
+              className="border-[#C47E63]/30 bg-background/50 p-2"
             />
           </div>
 
           <div>
-            <label className="mb-1 block text-xs font-medium text-gray-300">Correo Electrónico</label>
+            <label className="mb-1 block text-xs font-medium text-[#C47E63]">Correo Electrónico</label>
             <Input
               type="email"
               placeholder="tu@correo.com"
               required
               value={formData.email}
               onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-              className="border-[#C47E63]/30 bg-background/50"
+              className="border-[#C47E63]/30 bg-background/50 p-2"
             />
           </div>
 
