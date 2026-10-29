@@ -3,6 +3,12 @@
 import * as React from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useState } from "react";
+import { sendPdfAction } from "@/app/actions/send_gmail"; // Ajusta la ruta de tu importación
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner"; // O tu librería de notificaciones
 import {
   Avatar,
   AvatarFallback,
@@ -43,14 +49,29 @@ const itemscard = [
   }
 ];
 
-import { useState } from 'react';
-
-import miFoto from "@/public/tatifoto.png"
-import { sendPdfAction } from './actions/send_gmail';
 
 export default function HomePage() {
-  const [nombre, setNombre] = useState('');
-  const [email, setEmail] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    nombre: "",
+    email: "",
+  });
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!formData.nombre || !formData.email) return;
+
+    setLoading(true);
+    const res = await sendPdfAction(formData.nombre, formData.email);
+    setLoading(false);
+
+    if (res.status === "success") {
+      toast.success(res.message || "¡Te has pre-registrado con éxito! Revisa tu correo.");
+      setFormData({ nombre: "", email: "" }); // Limpiar formulario
+    } else {
+      toast.error(res.message || "Ocurrió un error. Inténtalo de nuevo.");
+    }
+  };
 
   // const plugin = React.useRef(
   //   Autoplay({ delay: 2000, stopOnInteraction: true })
@@ -285,36 +306,46 @@ export default function HomePage() {
           
         </div>
 
-        <form className="bg-[var(--color-crema)] p-6 border rounded-xl md:col-span-3 text-left shadow-sm space-y-3">
-          <h3 >QUIERO RECIBIR EL RECURSO GRATUITO</h3>
+        <form onSubmit={handleSubmit} className="space-y-4 text-left">
           <div>
-            <label className="text-xs font-semibold text-[var(--text-color)]">Nombre</label>
-            <input type="text" className="w-full border p-2 rounded  mt-1 focus:outline-none bg-white" onChange={(e) => setNombre(e.target.value)} required />
+            <label className="text-xs font-medium text-gray-300 mb-1 block">Tu Nombre</label>
+            <Input
+              type="text"
+              placeholder="Ej. María"
+              required
+              value={formData.nombre}
+              onChange={(e) => setFormData({ ...formData, nombre: e.target.value })}
+              className="bg-background/50 border-[#C47E63]/30"
+            />
           </div>
+
           <div>
-            <label className="text-xs font-semibold text-[var(--text-color)]">Email</label>
-            <input type="email" className="w-full border p-2 rounded  mt-1 focus:outline-none bg-white" onChange={(e) => setEmail(e.target.value)} required />
+            <label className="text-xs font-medium text-gray-300 mb-1 block">Correo Electrónico</label>
+            <Input
+              type="email"
+              placeholder="tu@correo.com"
+              required
+              value={formData.email}
+              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+              className="bg-background/50 border-[#C47E63]/30"
+            />
           </div>
-          <button type="submit" className="w-full bg-[#C47E63] text-white py-2 rounded  font-medium hover:opacity-90" onClick={async (e) => {
-            e.preventDefault();
-            try {
-              const response = await sendPdfAction(nombre, email);
-              if (response.status === "success") {
-                alert("¡Recursos enviados! Revisa tu correo.");
-              } else {
-                console.error("Error al enviar los recursos:", response);
-                alert("Error al enviar los recursos. Inténtalo de nuevo.");
-              }
-            } catch (error) {
-              console.error("Excepción al enviar los recursos:", error);
-              alert("Error al enviar los recursos. Inténtalo de nuevo.");
-            }
-          }}>
-            QUIERO RECIBIRLO
-          </button>
-          <p className="text-[10px] text-gray-400 text-center pt-1">
-            Al enviar aceptas nuestra <Link href="/politicas" className="underline">Política de Privacidad</Link>.
-          </p>
+
+          <div className="pt-2">
+            <Button
+              type="submit"
+              disabled={loading}
+              className="w-full bg-custom-gray-2 text-white px-6 py-6 rounded-full text-sm font-medium hover:opacity-90 transition-all shadow-sm"
+            >
+              {loading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" /> PROCESANDO...
+                </>
+              ) : (
+                "QUIERO PRE-REGISTRARME →"
+              )}
+            </Button>
+          </div>
         </form>
       </section>
 

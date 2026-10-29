@@ -6,13 +6,15 @@ interface ApiResponse {
 }
 
 export async function sendPdfAction(nombre: string, email: string): Promise<ApiResponse> {
-  const PHP_ENDPOINT = "https://api.guiadeparche.com/yogaparemba/correos_recursos_gratuitos.php"; // Cambia por tu dominio real
+  const PHP_ENDPOINT = "https://api.guiadeparche.com/yogaparemba/correos_recursos_gratuitos.php";
 
   try {
     const res = await fetch(PHP_ENDPOINT, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
+        // Importante para que el firewall de cPanel/subdominio no bloquee a Next.js
+        "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
       },
       body: JSON.stringify({ nombre, email }),
       cache: "no-store",
@@ -21,7 +23,7 @@ export async function sendPdfAction(nombre: string, email: string): Promise<ApiR
     const data: ApiResponse = await res.json();
 
     if (!res.ok) {
-      return { status: "error", message: data.message};
+      return { status: "error", message: data.message || "Error en el servidor" };
     }
 
     return data;
