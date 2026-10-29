@@ -347,6 +347,7 @@ export default function HomePage() {
             </Button>
           </div>
         </form>
+        <p className="text-xs text-gray-500">Te avisaré cuando abramos las puertas.</p>
       </section>
 
     </div>
