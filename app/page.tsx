@@ -297,10 +297,16 @@ export default function HomePage() {
           </div>
           <button type="submit" className="w-full bg-[#C47E63] text-white py-2 rounded  font-medium hover:opacity-90" onClick={async (e) => {
             e.preventDefault();
-            const response = await sendPdfAction(nombre, email);
-            if (response.status === "success") {
-              alert("¡Recursos enviados! Revisa tu correo.");
-            } else {
+            try {
+              const response = await sendPdfAction(nombre, email);
+              if (response.status === "success") {
+                alert("¡Recursos enviados! Revisa tu correo.");
+              } else {
+                console.error("Error al enviar los recursos:", response);
+                alert("Error al enviar los recursos. Inténtalo de nuevo.");
+              }
+            } catch (error) {
+              console.error("Excepción al enviar los recursos:", error);
               alert("Error al enviar los recursos. Inténtalo de nuevo.");
             }
           }}>
