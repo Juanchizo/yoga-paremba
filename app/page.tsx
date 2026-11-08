@@ -65,7 +65,7 @@ export default function HomePage() {
     setLoading(false);
 
     if (res.status === "success") {
-      alert(res.message || "¡Te has pre-registrado con éxito! Revisa tu correo.");
+      alert("¡Ya te enviamos el PDF, revisa tu correo electrónico en unos minutos lo recibirás.");
       setFormData({ nombre: "", email: "" }); // Limpiar formulario
     } else {
       alert(res.message || "Ocurrió un error. Inténtalo de nuevo.");
@@ -341,7 +341,7 @@ export default function HomePage() {
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" /> PROCESANDO...
                 </>
               ) : (
-                "QUIERO PRE-REGISTRARME →"
+                "QUIERO RECIBIR LA GUÍA →"
               )}
             </Button>
             <p className="text-xs text-gray-500">Te avisaré cuando abramos las puertas.</p>
