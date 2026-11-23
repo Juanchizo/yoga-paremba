@@ -12,6 +12,15 @@ import {
 import {
   HtmlEditorGuttenberg,
   htmlGuttenbergContent,
+  setHtmlGuttenbergContent,
+  setDataGuttenbergContent,
+  EstrategiaSeo,
+  seoStrategyContent,
+  setSeoStrategyContent,
+  buildFullSeoStrategyOutput,
+  DEFAULT_SEO_STRATEGY_DATA,
+  type SeoCategoryType,
+  type SeoStrategyData,
 } from "@profesorjand/astro-components/react"
 import "@profesorjand/astro-components/guttenberg.css"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -31,6 +40,15 @@ import {
   MapPin,
   Phone,
   Mail,
+  Plus,
+  Save,
+  Upload,
+  Trash2,
+  FileText,
+  Code2,
+  X,
+  Globe,
+  ExternalLink,
 } from "lucide-react"
 
 interface DBUserRow {
@@ -73,6 +91,19 @@ interface DBAsignacion {
   permiso_id: number
 }
 
+interface DBArticleItem {
+  id: number
+  category: string
+  default_locale: string
+  status: "draft" | "published" | "archived"
+  updated_at: string
+  created_at: string
+  locale: string
+  slug: string
+  canonical_url: string
+  title: string
+}
+
 type DashboardTab = "resumen" | "editor" | "usuarios" | "permisos"
 
 export default function DashboardPage() {
@@ -92,6 +123,23 @@ export default function DashboardPage() {
   const [asignaciones, setAsignaciones] = useState<DBAsignacion[]>([])
   const [loadingMatrix, setLoadingMatrix] = useState(false)
   const [togglingCell, setTogglingCell] = useState<string | null>(null)
+
+  // Estados para Artículos, Rutas Canónicas y Editor Guttenberg + SEO
+  const [articlesList, setArticlesList] = useState<DBArticleItem[]>([])
+  const [loadingArticles, setLoadingArticles] = useState(false)
+  const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null)
+  const [articleTitle, setArticleTitle] = useState("")
+  const [articleSlug, setArticleSlug] = useState("")
+  const [articleLocale, setArticleLocale] = useState("es")
+  const [articleMetaDescription, setArticleMetaDescription] = useState("")
+  const [articleCategory, setArticleCategory] = useState("guide")
+  const [articleStatus, setArticleStatus] = useState<"draft" | "published" | "archived">("published")
+  const [editorSubTab, setEditorSubTab] = useState<"visual" | "seo">("visual")
+  const [seoScore, setSeoScore] = useState<number>(0)
+  const [savingArticle, setSavingArticle] = useState(false)
+  const [deletingArticle, setDeletingArticle] = useState(false)
+  const [showImportHtmlModal, setShowImportHtmlModal] = useState(false)
+  const [rawHtmlToImport, setRawHtmlToImport] = useState("")
 
   // Sincronizar usuario actual y revisar si viene ?tab=editor
   useEffect(() => {
@@ -118,6 +166,10 @@ export default function DashboardPage() {
     window.addEventListener("authChange", handleAuthUpdate)
     return () => window.removeEventListener("authChange", handleAuthUpdate)
   }, [])
+
+  const canUseEditor = hasPermission(user, "acceso_editor")
+  const canManageUsers = hasPermission(user, "gestionar_usuarios")
+  const canManageRoles = hasPermission(user, "gestionar_roles")
 
   // Cargar lista de usuarios cuando se abre la pestaña 'usuarios'
   const fetchUsuarios = useCallback(async () => {
@@ -168,13 +220,31 @@ export default function DashboardPage() {
     }
   }, [user?.email])
 
+  // Cargar lista de artículos para el editor Guttenberg
+  const fetchArticles = useCallback(async () => {
+    setLoadingArticles(true)
+    try {
+      const res = await fetch(`${API_BASE_URL}/articles/articles.php`)
+      const data = await res.json()
+      if (data.ok && Array.isArray(data.articles)) {
+        setArticlesList(data.articles)
+      }
+    } catch (e) {
+      console.error("Error al cargar artículos:", e)
+    } finally {
+      setLoadingArticles(false)
+    }
+  }, [])
+
   useEffect(() => {
-    if (activeTab === "usuarios" && hasPermission(user, "gestionar_usuarios")) {
+    if (activeTab === "editor" && canUseEditor) {
+      fetchArticles()
+    } else if (activeTab === "usuarios" && hasPermission(user, "gestionar_usuarios")) {
       fetchUsuarios()
     } else if (activeTab === "permisos" && hasPermission(user, "gestionar_roles")) {
       fetchMatrizPermisos()
     }
-  }, [activeTab, user, fetchUsuarios, fetchMatrizPermisos])
+  }, [activeTab, user, canUseEditor, fetchArticles, fetchUsuarios, fetchMatrizPermisos])
 
   // Cambiar rol de un usuario en la BD
   async function handleChangeUserRole(usuarioId: number, nuevoRolId: number) {
@@ -265,10 +335,6 @@ export default function DashboardPage() {
     }
   }
 
-  const canUseEditor = hasPermission(user, "acceso_editor")
-  const canManageUsers = hasPermission(user, "gestionar_usuarios")
-  const canManageRoles = hasPermission(user, "gestionar_roles")
-
   // Filtrado de usuarios por buscador
   const filteredUsers = usuariosList.filter((u) => {
     const q = searchQuery.toLowerCase().trim()
@@ -286,6 +352,409 @@ export default function DashboardPage() {
     if (estado === "fecha" && fecha) return `Fecha: ${fecha}`
     if (estado === "aun_no_se") return "Aún no lo sabe"
     return "No aplica"
+  }
+
+  function slugify(text: string) {
+    return text
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)+/g, "")
+  }
+
+  function normalizeRoutePathForInput(raw: string): string {
+    let val = raw.trimStart().toLowerCase()
+    val = val.replace(/^https?:\/\/[^/]+\/?/i, "")
+    val = val
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .replace(/\s+/g, "-")
+      .replace(/[^a-z0-9\-_/]/g, "-")
+      .replace(/\/+/g, "/")
+      .replace(/^\/+/, "")
+    return val
+  }
+
+  function normalizeRoutePathForSave(raw: string): string {
+    let val = raw.trim().split(/[?#]/)[0] || ""
+    val = val.replace(/^https?:\/\/[^/]+\/?/i, "")
+    return val
+      .toLowerCase()
+      .normalize("NFD")
+      .replace(/[\u0300-\u036f]/g, "")
+      .split("/")
+      .map((seg) => seg.replace(/[^a-z0-9\-_]+/g, "-").replace(/(^-|-$)+/g, ""))
+      .filter(Boolean)
+      .join("/")
+  }
+
+  function buildCanonicalUrl(rawPath: string): string {
+    const clean = normalizeRoutePathForSave(rawPath)
+    return clean ? `https://tatimonteroyoga.com/${clean}` : "https://tatimonteroyoga.com"
+  }
+
+  function extractPathFromCanonical(canonicalUrl?: string | null, fallbackSlug?: string | null): string {
+    if (canonicalUrl && canonicalUrl.trim()) {
+      const cleaned = normalizeRoutePathForSave(canonicalUrl)
+      if (cleaned) return cleaned
+    }
+    return normalizeRoutePathForSave(fallbackSlug || "")
+  }
+
+  function mapToSeoCategory(cat: string): SeoCategoryType {
+    if (cat === "news_blog" || cat === "event" || cat === "biography" || cat === "spotify_top" || cat === "guide") {
+      return cat
+    }
+    return "guide"
+  }
+
+  function syncSeoQuickFields(partial: Partial<SeoStrategyData>) {
+    try {
+      seoStrategyContent.updateData(partial, "seo-dashboard")
+    } catch {
+      // Ignorar si el panel SEO aún está inicializando
+    }
+  }
+
+  // Cargar un artículo existente o iniciar uno nuevo
+  async function handleSelectArticle(id: number | null) {
+    if (!id) {
+      setSelectedArticleId(null)
+      setArticleTitle("")
+      setArticleSlug("")
+      setArticleLocale("es")
+      setArticleMetaDescription("")
+      setArticleCategory("guide")
+      setArticleStatus("published")
+      setHtmlGuttenbergContent("<p>Comienza a redactar tu contenido aquí...</p>")
+      const resetSeo = setSeoStrategyContent(
+        {
+          ...DEFAULT_SEO_STRATEGY_DATA,
+          category: "guide",
+          inLanguage: "es",
+          headline: "",
+          metaDescription: "",
+          canonicalUrl: "https://tatimonteroyoga.com/",
+          authorName: "Tati Montero",
+          publisherName: "Tati Montero Yoga",
+          mainImageUrl: "https://tatimonteroyoga.com/tatifoto.png",
+          mainImageAlt: "Tati Montero Yoga Prenatal",
+        },
+        "seo-dashboard"
+      )
+      setSeoScore(resetSeo?.score || 0)
+      return
+    }
+
+    setLoadingArticles(true)
+    setStatusBanner(null)
+    try {
+      const res = await fetch(`${API_BASE_URL}/articles/articles.php?id=${id}`)
+      const data = await res.json()
+      if (data.ok && data.article) {
+        const art = data.article
+        const translationsArr = Array.isArray(data.translations) ? data.translations : []
+        const trans =
+          translationsArr.find((t: { locale?: string }) => t.locale === art.default_locale) ||
+          translationsArr[0] ||
+          null
+
+        const loadedLocale = trans?.locale || art.default_locale || "es"
+        const loadedPath = extractPathFromCanonical(trans?.canonical_url, trans?.slug)
+        const loadedTitle = trans?.title || ""
+        const loadedCategory = art.category || "guide"
+
+        setSelectedArticleId(art.id)
+        setArticleCategory(loadedCategory)
+        setArticleStatus(art.status || "published")
+        setArticleLocale(loadedLocale)
+        setArticleTitle(loadedTitle)
+        setArticleSlug(loadedPath)
+
+        // Restaurar estado completo en Guttenberg
+        if (art.full_guttenberg_json) {
+          try {
+            const parsed =
+              typeof art.full_guttenberg_json === "string"
+                ? JSON.parse(art.full_guttenberg_json)
+                : art.full_guttenberg_json
+            setDataGuttenbergContent(parsed)
+          } catch {
+            if (trans?.html_content) {
+              setHtmlGuttenbergContent(trans.html_content)
+            }
+          }
+        } else if (trans?.html_content) {
+          setHtmlGuttenbergContent(trans.html_content)
+        }
+
+        // Restaurar estado SEO completo (desde trans.seo_data_json o art.full_seo_json)
+        let seoSource: Partial<SeoStrategyData> | string | null =
+          trans?.seo_data_json || art.full_seo_json || null
+        let parsedSeoObj: Partial<SeoStrategyData> = {}
+        if (typeof seoSource === "string" && seoSource.trim()) {
+          try {
+            const rawParsed = JSON.parse(seoSource)
+            parsedSeoObj = rawParsed?.data ? rawParsed.data : rawParsed
+          } catch {
+            parsedSeoObj = {}
+          }
+        } else if (seoSource && typeof seoSource === "object") {
+          parsedSeoObj = (seoSource as { data?: Partial<SeoStrategyData> }).data || (seoSource as Partial<SeoStrategyData>)
+        }
+
+        const mergedSeoData: Partial<SeoStrategyData> = {
+          ...DEFAULT_SEO_STRATEGY_DATA,
+          ...parsedSeoObj,
+          category: mapToSeoCategory(parsedSeoObj.category || loadedCategory),
+          inLanguage: parsedSeoObj.inLanguage || loadedLocale,
+          headline: parsedSeoObj.headline || loadedTitle,
+          canonicalUrl: parsedSeoObj.canonicalUrl || trans?.canonical_url || buildCanonicalUrl(loadedPath),
+          authorName: parsedSeoObj.authorName || "Tati Montero",
+          publisherName: parsedSeoObj.publisherName || "Tati Montero Yoga",
+          mainImageUrl: parsedSeoObj.mainImageUrl || "https://tatimonteroyoga.com/tatifoto.png",
+        }
+        const loadedSeoOut = setSeoStrategyContent(mergedSeoData, "seo-dashboard")
+        setArticleMetaDescription(mergedSeoData.metaDescription || "")
+        setSeoScore(loadedSeoOut?.score || 0)
+
+        setStatusBanner({
+          type: "ok",
+          text: `Página #${art.id} ("${loadedTitle || art.id}" -> /${loadedPath}) cargada en el editor.`,
+        })
+      } else {
+        setStatusBanner({
+          type: "err",
+          text: data.message || "No se pudo cargar el artículo seleccionado.",
+        })
+      }
+    } catch (err) {
+      console.error(err)
+      setStatusBanner({ type: "err", text: "Error de red al cargar el artículo." })
+    } finally {
+      setLoadingArticles(false)
+    }
+  }
+
+  // Guardar (Crear o Actualizar) en MySQL incluyendo Rutas Canónicas y SEO Completo
+  async function handleSaveArticle() {
+    if (!user?.email) return
+    const finalTitle = articleTitle.trim() || "Página sin título"
+    let cleanPath = normalizeRoutePathForSave(articleSlug)
+    if (!cleanPath) {
+      cleanPath = slugify(finalTitle) || `pagina-${Date.now()}`
+      setArticleSlug(cleanPath)
+    }
+
+    const primaryLocale = articleLocale || "es"
+    const primaryCanonical = buildCanonicalUrl(cleanPath)
+
+    setSavingArticle(true)
+    setStatusBanner(null)
+
+    const isUpdate = selectedArticleId !== null && selectedArticleId > 0
+    const endpoint = isUpdate
+      ? `${API_BASE_URL}/articles/articles.php?id=${selectedArticleId}&_method=PUT`
+      : `${API_BASE_URL}/articles/articles.php`
+    const method = "POST"
+
+    const gtOut = htmlGuttenbergContent.get("editor-dashboard")
+    const currentHtml = gtOut?.html || htmlGuttenbergContent.html || ""
+    const currentCss = gtOut?.css || htmlGuttenbergContent.css || ""
+    const currentJson = gtOut ? JSON.stringify(gtOut) : (htmlGuttenbergContent.json || "")
+
+    const currentSeoOut = seoStrategyContent.get("seo-dashboard")
+    const baseSeoData: SeoStrategyData = {
+      ...DEFAULT_SEO_STRATEGY_DATA,
+      ...(currentSeoOut?.data || {}),
+      category: mapToSeoCategory(articleCategory),
+      inLanguage: primaryLocale,
+      headline: (currentSeoOut?.data?.headline || "").trim() || finalTitle,
+      metaDescription:
+        articleMetaDescription.trim() ||
+        (currentSeoOut?.data?.metaDescription || "").trim() ||
+        `${finalTitle} — Tati Montero Yoga`,
+      canonicalUrl: primaryCanonical,
+      authorName: (currentSeoOut?.data?.authorName || "").trim() || "Tati Montero",
+      publisherName: (currentSeoOut?.data?.publisherName || "").trim() || "Tati Montero Yoga",
+      mainImageUrl:
+        (currentSeoOut?.data?.mainImageUrl || "").trim() || "https://tatimonteroyoga.com/tatifoto.png",
+      mainImageAlt:
+        (currentSeoOut?.data?.mainImageAlt || "").trim() || finalTitle,
+    }
+
+    // Construir mapa multi-idioma si existen traducciones adicionales activas
+    const canonicalByLocale: Record<string, string> = {
+      [primaryLocale]: primaryCanonical,
+    }
+    const gtTranslations = gtOut?.translations || htmlGuttenbergContent.translations || {}
+    const seoTranslations = seoStrategyContent.translations || {}
+    const extraLocales = new Set<string>()
+
+    for (const loc of Object.keys(seoTranslations)) {
+      if (loc === primaryLocale) continue
+      const tr = seoTranslations[loc]
+      const gtTr = gtTranslations[loc]
+      const hasCustomSeo = Boolean(tr?.data?.headline && tr.data.headline.trim())
+      const hasCustomHtml = Boolean(gtTr?.html && gtTr.html.trim() && gtTr.blocks?.length)
+      if (hasCustomSeo || hasCustomHtml) {
+        extraLocales.add(loc)
+        const altPath = tr?.canonicalUrl
+          ? normalizeRoutePathForSave(tr.canonicalUrl)
+          : `${loc}/${cleanPath.replace(new RegExp(`^${primaryLocale}/`), "")}`
+        canonicalByLocale[loc] = buildCanonicalUrl(altPath)
+      }
+    }
+
+    const finalPrimarySeoOut = buildFullSeoStrategyOutput(baseSeoData, {
+      baseLocale: primaryLocale,
+      baseCanonicalUrl: primaryCanonical,
+      canonicalByLocale,
+    })
+    setSeoScore(finalPrimarySeoOut.score)
+
+    const translationsPayload = [
+      {
+        locale: primaryLocale,
+        slug: cleanPath,
+        canonical_url: primaryCanonical,
+        title: finalTitle,
+        html_content: currentHtml,
+        seo_head_html: finalPrimarySeoOut.headHtml,
+        guttenberg_json: currentJson,
+        seo_data_json: finalPrimarySeoOut.json,
+      },
+    ]
+
+    for (const loc of extraLocales) {
+      const gtTr = gtTranslations[loc]
+      const seoTr = seoTranslations[loc]
+      const locCanonical = canonicalByLocale[loc]
+      const locSlug = extractPathFromCanonical(locCanonical, `${loc}/${cleanPath}`)
+      const locTitle = (seoTr?.data?.headline || "").trim() || `${finalTitle} (${loc.toUpperCase()})`
+      const locSeoData: SeoStrategyData = {
+        ...baseSeoData,
+        ...(seoTr?.data || {}),
+        inLanguage: loc,
+        headline: locTitle,
+        canonicalUrl: locCanonical,
+      }
+      const locSeoOut = buildFullSeoStrategyOutput(locSeoData, {
+        baseLocale: primaryLocale,
+        baseCanonicalUrl: primaryCanonical,
+        canonicalByLocale,
+      })
+      translationsPayload.push({
+        locale: loc,
+        slug: locSlug,
+        canonical_url: locCanonical,
+        title: locTitle,
+        html_content: gtTr?.html || currentHtml,
+        seo_head_html: locSeoOut.headHtml,
+        guttenberg_json: gtTr ? JSON.stringify(gtTr) : currentJson,
+        seo_data_json: locSeoOut.json,
+      })
+    }
+
+    const payload = {
+      _method: isUpdate ? "PUT" : "POST",
+      solicitante: user.email,
+      id: selectedArticleId,
+      category: articleCategory,
+      default_locale: primaryLocale,
+      status: articleStatus,
+      theme_css: currentCss,
+      full_guttenberg_json: currentJson,
+      full_seo_json: finalPrimarySeoOut.json,
+      translations: translationsPayload,
+    }
+
+    try {
+      const res = await fetch(endpoint, {
+        method,
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload),
+      })
+      const data = await res.json()
+      if (data.ok || data.status === "success") {
+        if (!isUpdate && data.article_id) {
+          setSelectedArticleId(data.article_id)
+        }
+        setArticleSlug(cleanPath)
+        setStatusBanner({
+          type: "ok",
+          text: isUpdate
+            ? `¡Página #${selectedArticleId} actualizada! URL pública: ${primaryCanonical}`
+            : `¡Página creada con ID #${data.article_id}! URL pública: ${primaryCanonical}`,
+        })
+        await fetchArticles()
+      } else {
+        setStatusBanner({
+          type: "err",
+          text: data.message || "No se pudo guardar el artículo.",
+        })
+      }
+    } catch (err) {
+      console.error(err)
+      setStatusBanner({ type: "err", text: "Error de red al guardar el artículo." })
+    } finally {
+      setSavingArticle(false)
+    }
+  }
+
+  // Eliminar artículo seleccionado
+  async function handleDeleteArticle() {
+    if (!selectedArticleId || !user?.email) return
+    const confirmed = window.confirm(
+      `¿Estás seguro de que deseas eliminar permanentemente el artículo #${selectedArticleId} ("${articleTitle || "Sin título"}")?`
+    )
+    if (!confirmed) return
+
+    setDeletingArticle(true)
+    setStatusBanner(null)
+    try {
+      const res = await fetch(
+        `${API_BASE_URL}/articles/articles.php?id=${selectedArticleId}&_method=DELETE&solicitante=${encodeURIComponent(user.email)}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            _method: "DELETE",
+            id: selectedArticleId,
+            solicitante: user.email,
+          }),
+        }
+      )
+      const data = await res.json()
+      if (data.ok || data.status === "success") {
+        setStatusBanner({
+          type: "ok",
+          text: `Artículo #${selectedArticleId} eliminado correctamente de la base de datos.`,
+        })
+        await handleSelectArticle(null)
+        await fetchArticles()
+      } else {
+        setStatusBanner({ type: "err", text: data.message || "Error al eliminar el artículo." })
+      }
+    } catch (err) {
+      console.error(err)
+      setStatusBanner({ type: "err", text: "Error de red al eliminar el artículo." })
+    } finally {
+      setDeletingArticle(false)
+    }
+  }
+
+  // Importar HTML externo y convertirlo a bloques de Guttenberg
+  function handleImportRawHtml() {
+    if (!rawHtmlToImport.trim()) return
+    setHtmlGuttenbergContent(rawHtmlToImport)
+    setShowImportHtmlModal(false)
+    setRawHtmlToImport("")
+    setStatusBanner({
+      type: "ok",
+      text: "Código HTML importado y transformado en bloques de Guttenberg.",
+    })
   }
 
   return (
@@ -573,50 +1042,424 @@ export default function DashboardPage() {
         {/* PESTAÑA 2: EDITOR GUTTENBERG INTEGRADO EN EL DASHBOARD */}
         {/* ============================================================= */}
         {activeTab === "editor" && canUseEditor && (
-          <div className="space-y-4 animate-in fade-in duration-200">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-5 rounded-xl border border-stone-200 shadow-xs">
-              <div>
-                <h2 className="text-lg font-medium text-[#C47E63]">
-                  Editor de Contenido Guttenberg
-                </h2>
-                <p className="text-xs text-stone-500">
-                  Estás trabajando dentro de tu Panel (`/dashboard`). Los cambios se mantienen mientras navegas por el editor.
-                </p>
+          <div className="space-y-5 animate-in fade-in duration-200">
+            {/* BARRA SUPERIOR DE GESTIÓN DE ARTÍCULOS */}
+            <div className="bg-white p-5 rounded-2xl border border-stone-200 shadow-xs space-y-4">
+              <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
+                <div>
+                  <div className="flex items-center gap-2.5">
+                    <h2 className="text-xl font-medium text-[#C47E63]">
+                      Editor Visual Guttenberg
+                    </h2>
+                    {selectedArticleId ? (
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#C47E63]/15 text-[#C47E63] font-medium border border-[#C47E63]/30">
+                        Editando ID #{selectedArticleId}
+                      </span>
+                    ) : (
+                      <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800 font-medium border border-emerald-200">
+                        Nuevo Artículo
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    Crea, actualiza e importa contenidos directamente en la base de datos MySQL (tatimonteroyoga.com).
+                  </p>
+                </div>
+
+                {/* BOTONES DE ACCIÓN */}
+                <div className="flex flex-wrap items-center gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => handleSelectArticle(null)}
+                    className="border-stone-200 text-stone-700 hover:bg-stone-50 text-xs gap-1.5"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    Nuevo
+                  </Button>
+
+                  <Button
+                    type="button"
+                    variant="outline"
+                    onClick={() => setShowImportHtmlModal(true)}
+                    className="border-[#6d8f8a]/40 text-[#6d8f8a] hover:bg-[#6d8f8a]/10 text-xs gap-1.5"
+                  >
+                    <Upload className="w-3.5 h-3.5" />
+                    Importar HTML plano
+                  </Button>
+
+                  {selectedArticleId && (
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleDeleteArticle}
+                      disabled={deletingArticle}
+                      className="border-red-200 text-red-600 hover:bg-red-50 text-xs gap-1.5"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      {deletingArticle ? "Borrando..." : "Eliminar"}
+                    </Button>
+                  )}
+
+                  <Button
+                    type="button"
+                    onClick={handleSaveArticle}
+                    disabled={savingArticle}
+                    className="!bg-[#C47E63] hover:opacity-90 text-white text-xs gap-1.5 shadow-sm font-medium"
+                  >
+                    {savingArticle ? (
+                      <RefreshCw className="w-3.5 h-3.5 animate-spin" />
+                    ) : (
+                      <Save className="w-3.5 h-3.5" />
+                    )}
+                    {savingArticle
+                      ? "Guardando en BD..."
+                      : selectedArticleId
+                      ? "Actualizar en BD"
+                      : "Guardar en Base de Datos"}
+                  </Button>
+                </div>
               </div>
 
-              <Button
-                type="button"
-                onClick={() => {
-                  console.log("HTML actual:", htmlGuttenbergContent.html)
-                  console.log("CSS guttenberg.css:", htmlGuttenbergContent.css)
-                  guardarHtmlGuttenberg(htmlGuttenbergContent.html);
+              {/* SELECTOR DE ARTÍCULOS EXISTENTES DESDE BD */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 pt-3 border-t border-stone-100">
+                <div className="flex items-center gap-2 text-xs text-stone-600 font-medium shrink-0">
+                  <FileText className="w-4 h-4 text-[#C47E63]" />
+                  <span>Cargar desde BD:</span>
+                </div>
+                <div className="flex-1 flex items-center gap-2">
+                  <select
+                    value={selectedArticleId || ""}
+                    onChange={(e) => {
+                      const val = e.target.value ? Number(e.target.value) : null
+                      handleSelectArticle(val)
+                    }}
+                    disabled={loadingArticles}
+                    className="w-full bg-[var(--color-marfil)] border border-stone-300 rounded-lg px-3 py-2 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#C47E63] disabled:opacity-60 cursor-pointer"
+                  >
+                    <option value="">➕ [Nuevo Artículo - Vacío]</option>
+                    {articlesList.map((art) => (
+                      <option key={art.id} value={art.id}>
+                        #{art.id} — {art.title || "(Sin título)"} [/
+                        {extractPathFromCanonical(art.canonical_url, art.slug) || "sin-ruta"}] (
+                        {art.status})
+                      </option>
+                    ))}
+                  </select>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={fetchArticles}
+                    disabled={loadingArticles}
+                    title="Recargar lista de artículos desde la BD"
+                    className="shrink-0"
+                  >
+                    <RefreshCw className={`w-3.5 h-3.5 ${loadingArticles ? "animate-spin" : ""}`} />
+                  </Button>
+                </div>
+              </div>
 
-                  setStatusBanner({
-                    type: "ok",
-                    text: "Contenido HTML y CSS generados correctamente (revisa también la consola F12).",
-                  })
-                }}
-                className="!bg-[#C47E63] hover:opacity-90 text-white text-xs cursor-pointer"
-              >
-                Guardar / Obtener HTML
-              </Button>
+              {/* CAMPOS DE METADATOS (TÍTULO, RUTA URL CANÓNICA, IDIOMA, SEO, CATEGORÍA, ESTADO) */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 pt-2">
+                <div>
+                  <label className="block text-[11px] font-medium text-stone-600 uppercase mb-1">
+                    Título Principal (H1 / OG)
+                  </label>
+                  <Input
+                    type="text"
+                    placeholder="Ej. Primera Página de Yoga Prenatal"
+                    value={articleTitle}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setArticleTitle(val)
+                      syncSeoQuickFields({ headline: val })
+                      if (!selectedArticleId && !articleSlug) {
+                        const autoSlug = slugify(val)
+                        setArticleSlug(autoSlug)
+                        syncSeoQuickFields({ canonicalUrl: buildCanonicalUrl(autoSlug) })
+                      }
+                    }}
+                    className="text-xs bg-[var(--color-marfil)]"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-[11px] font-medium text-stone-600 uppercase mb-1">
+                    Ruta URL Pública (Canonical)
+                  </label>
+                  <div className="flex items-center bg-[var(--color-marfil)] border border-stone-300 rounded-lg overflow-hidden focus-within:border-[#C47E63]">
+                    <span className="px-2.5 py-2 text-[11px] font-mono text-stone-500 bg-stone-100 border-r border-stone-200 shrink-0 select-none">
+                      https://tatimonteroyoga.com/
+                    </span>
+                    <input
+                      type="text"
+                      placeholder="primera-pagina o catalogo/catalogo-1"
+                      value={articleSlug}
+                      onChange={(e) => {
+                        const nextPath = normalizeRoutePathForInput(e.target.value)
+                        setArticleSlug(nextPath)
+                        syncSeoQuickFields({ canonicalUrl: buildCanonicalUrl(nextPath) })
+                      }}
+                      className="w-full px-2.5 py-2 text-xs font-mono text-stone-800 bg-transparent focus:outline-none"
+                    />
+                    {selectedArticleId && normalizeRoutePathForSave(articleSlug) && (
+                      <a
+                        href={`/${normalizeRoutePathForSave(articleSlug)}${
+                          articleStatus !== "published" ? "?preview=1" : ""
+                        }`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        title="Abrir página pública en una pestaña nueva"
+                        className="px-2.5 py-2 text-[11px] font-medium text-[#6d8f8a] hover:text-[#55746f] flex items-center gap-1 shrink-0 border-l border-stone-200 bg-white/60"
+                      >
+                        Ver <ExternalLink className="w-3 h-3" />
+                      </a>
+                    )}
+                  </div>
+                  <p className="text-[10px] text-stone-400 mt-1">
+                    Soporta rutas simples o multinivel: <code className="text-stone-600">primera-pagina</code>,{" "}
+                    <code className="text-stone-600">es/primera-pagina</code>,{" "}
+                    <code className="text-stone-600">primera-pagina/seguimiento</code>,{" "}
+                    <code className="text-stone-600">catalogo/catalogo-1</code>
+                  </p>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-stone-600 uppercase mb-1">
+                    Idioma Base
+                  </label>
+                  <select
+                    value={articleLocale}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setArticleLocale(val)
+                      syncSeoQuickFields({ inLanguage: val })
+                    }}
+                    className="w-full bg-[var(--color-marfil)] border border-stone-300 rounded-lg px-3 py-2 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#C47E63] cursor-pointer"
+                  >
+                    <option value="es">🇪🇸 Español (es)</option>
+                    <option value="en">🇬🇧 English (en)</option>
+                    <option value="pt">🇧🇷 Português (pt)</option>
+                  </select>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <div className="flex items-center justify-between mb-1">
+                    <label className="block text-[11px] font-medium text-stone-600 uppercase">
+                      Meta Descripción SEO (Google SERP)
+                    </label>
+                    <span
+                      className={`text-[10px] font-mono ${
+                        articleMetaDescription.length >= 110 && articleMetaDescription.length <= 160
+                          ? "text-emerald-600"
+                          : "text-stone-400"
+                      }`}
+                    >
+                      {articleMetaDescription.length}/160 car.
+                    </span>
+                  </div>
+                  <Input
+                    type="text"
+                    maxLength={180}
+                    placeholder="Descripción breve que aparecerá en Google (ideal 120-160 caracteres)..."
+                    value={articleMetaDescription}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setArticleMetaDescription(val)
+                      syncSeoQuickFields({ metaDescription: val })
+                    }}
+                    className="text-xs bg-[var(--color-marfil)]"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-stone-600 uppercase mb-1">
+                    Categoría / Schema SEO
+                  </label>
+                  <select
+                    value={articleCategory}
+                    onChange={(e) => {
+                      const val = e.target.value
+                      setArticleCategory(val)
+                      syncSeoQuickFields({ category: mapToSeoCategory(val) })
+                    }}
+                    className="w-full bg-[var(--color-marfil)] border border-stone-300 rounded-lg px-3 py-2 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#C47E63] cursor-pointer"
+                  >
+                    <option value="guide">Guía / Práctica (HowTo / FAQ)</option>
+                    <option value="news_blog">Noticias y Blog (Article)</option>
+                    <option value="event">Retiro / Evento (Event)</option>
+                    <option value="biography">Biografía / Acerca de (Profile)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-[11px] font-medium text-stone-600 uppercase mb-1">
+                    Estado de Publicación
+                  </label>
+                  <select
+                    value={articleStatus}
+                    onChange={(e) =>
+                      setArticleStatus(e.target.value as "draft" | "published" | "archived")
+                    }
+                    className="w-full bg-[var(--color-marfil)] border border-stone-300 rounded-lg px-3 py-2 text-xs font-medium text-stone-800 focus:outline-none focus:border-[#C47E63] cursor-pointer"
+                  >
+                    <option value="published">🟢 Publicado (Visible en Web)</option>
+                    <option value="draft">🟡 Borrador (Solo Preview)</option>
+                    <option value="archived">⚪ Archivado (Oculto)</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* SUB-PESTAÑAS DEL EDITOR: CONTENIDO VISUAL vs SEO ESTRATEGIA */}
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-stone-100">
+                <div className="flex flex-wrap items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setEditorSubTab("visual")}
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                      editorSubTab === "visual"
+                        ? "bg-[#6d8f8a] text-white shadow-xs"
+                        : "bg-[var(--color-marfil)] text-stone-700 hover:bg-stone-100 border border-stone-200"
+                    }`}
+                  >
+                    <FileEdit className="w-3.5 h-3.5" />
+                    Contenido Visual (Guttenberg)
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => setEditorSubTab("seo")}
+                    className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-medium transition-all cursor-pointer ${
+                      editorSubTab === "seo"
+                        ? "bg-[#C47E63] text-white shadow-xs"
+                        : "bg-[var(--color-marfil)] text-stone-700 hover:bg-stone-100 border border-stone-200"
+                    }`}
+                  >
+                    <Globe className="w-3.5 h-3.5" />
+                    SEO Avanzado, Schema & Posición 0
+                    <span
+                      className={`ml-1 px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
+                        editorSubTab === "seo"
+                          ? "bg-white/25 text-white"
+                          : seoScore >= 75
+                          ? "bg-emerald-100 text-emerald-700"
+                          : "bg-amber-100 text-amber-800"
+                      }`}
+                    >
+                      {seoScore}/100
+                    </span>
+                  </button>
+                </div>
+
+                <span className="text-[11px] text-stone-400">
+                  Ambos paneles se guardan juntos al presionar &quot;
+                  {selectedArticleId ? "Actualizar en BD" : "Guardar en Base de Datos"}&quot;.
+                </span>
+              </div>
             </div>
 
-            <div className="bg-white rounded-xl shadow-xs border border-stone-200 overflow-hidden">
+            {/* MODAL PARA IMPORTAR HTML PLANO */}
+            {showImportHtmlModal && (
+              <div className="fixed inset-0 z-50 bg-black/50 backdrop-blur-xs flex items-center justify-center p-4">
+                <div className="bg-white rounded-2xl max-w-2xl w-full p-6 shadow-2xl space-y-4 border border-stone-200 animate-in zoom-in-95 duration-150">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Code2 className="w-5 h-5 text-[#C47E63]" />
+                      <h3 className="font-medium text-base text-stone-800">
+                        Importar Código HTML al Editor Guttenberg
+                      </h3>
+                    </div>
+                    <button
+                      type="button"
+                      onClick={() => setShowImportHtmlModal(false)}
+                      className="text-stone-400 hover:text-stone-600 p-1"
+                    >
+                      <X className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  <p className="text-xs text-stone-500 leading-relaxed">
+                    Pega cualquier código HTML externo (de blogs anteriores, documentos, exports o CMS).
+                    El motor de Guttenberg lo convertirá automáticamente en bloques interactivos
+                    (párrafos, títulos, listas, columnas, tablas o imágenes) listos para seguir editando.
+                  </p>
+
+                  <textarea
+                    rows={10}
+                    value={rawHtmlToImport}
+                    onChange={(e) => setRawHtmlToImport(e.target.value)}
+                    placeholder="<h2>Título del artículo</h2><p>Contenido del párrafo...</p><ul><li>Elemento 1</li></ul>"
+                    className="w-full p-3 font-mono text-xs border border-stone-300 rounded-xl bg-stone-50 focus:bg-white focus:outline-none focus:border-[#C47E63]"
+                  />
+
+                  <div className="flex items-center justify-end gap-2 pt-2">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={() => setShowImportHtmlModal(false)}
+                      className="text-xs"
+                    >
+                      Cancelar
+                    </Button>
+                    <Button
+                      type="button"
+                      onClick={handleImportRawHtml}
+                      disabled={!rawHtmlToImport.trim()}
+                      className="!bg-[#C47E63] hover:opacity-90 text-white text-xs gap-1.5"
+                    >
+                      <Upload className="w-3.5 h-3.5" />
+                      Convertir y Cargar en Editor
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* CONTENEDORES MONTADOS DE GUTTENBERG + ESTRATEGIA SEO (CAMBIO POR CSS PARA NO PERDER ESTADO) */}
+            <div
+              className={`bg-white rounded-2xl shadow-xs border border-stone-200 overflow-hidden ${
+                editorSubTab === "visual" ? "block" : "hidden"
+              }`}
+            >
               <HtmlEditorGuttenberg
                 id="editor-dashboard"
                 name="contenido"
                 styleMode="custom"
                 enableCssEditor={true}
-                onChange={(data) => {
-                  console.log("Editando en vivo:", data.html)
+                onSave={() => {
+                  handleSaveArticle()
                 }}
-                onSave={(data) => {
-                  console.log("Guardado desde barra del editor:", data)
-                  setStatusBanner({
-                    type: "ok",
-                    text: "¡Guardado emitido desde el editor Guttenberg!",
-                  })
+              />
+            </div>
+
+            <div
+              className={`bg-white rounded-2xl shadow-xs border border-stone-200 overflow-hidden ${
+                editorSubTab === "seo" ? "block" : "hidden"
+              }`}
+            >
+              <EstrategiaSeo
+                id="seo-dashboard"
+                name="seo_dashboard"
+                initialCategory="guide"
+                useGtClasses={true}
+                baseLocale="es"
+                initialLocales={["es"]}
+                targetEditorId="editor-dashboard"
+                initialData={{
+                  category: "guide",
+                  inLanguage: "es",
+                  authorName: "Tati Montero",
+                  publisherName: "Tati Montero Yoga",
+                  mainImageUrl: "https://tatimonteroyoga.com/tatifoto.png",
+                }}
+                onChange={(out) => {
+                  setSeoScore(out.score)
+                  if (out.data?.metaDescription !== undefined) {
+                    setArticleMetaDescription(out.data.metaDescription)
+                  }
+                }}
+                onSave={() => {
+                  handleSaveArticle()
                 }}
               />
             </div>
