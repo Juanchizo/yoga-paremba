@@ -23,8 +23,12 @@ const montserrat = Montserrat({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://tatimonteroyoga.com'),
   title: 'Tati Montero Yoga',
   description: 'Yoga prenatal para acompañarte durante tu embarazo. Un espacio para moverte, respirar y conectar con tu cuerpo durante una de las etapas más transformadoras de tu vida.',
+  verification:{
+    google: 'oivBbwk_-NRzKr3Bk6b-RAH41RvH56cs5knb_CcRBXY'
+  },
   icons: {
     icon: '/tatifoto.png', // <-- Nombre de tu imagen guardada en la carpeta /public
   },
